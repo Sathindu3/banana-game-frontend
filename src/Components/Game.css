@@ -1,5 +1,5 @@
 .game-container {
-<<<<<<< Updated upstream
+
     text-align: center;
     padding: 20px;
   }
@@ -69,6 +69,8 @@
   }
   
 =======
+=======
+>>>>>>> Stashed changes
   width: 1200px;
   height: 1000px;
   border: 2px solid black;
@@ -121,4 +123,7 @@
   box-shadow: 0px 0px 10px gray;
   text-align: center;
 }
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes

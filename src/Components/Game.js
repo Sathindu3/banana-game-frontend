@@ -10,7 +10,10 @@ const Game = () => {
   const [timeLeft, setTimeLeft] = useState(30);
   const [showQuiz, setShowQuiz] = useState(false);
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
   const [result, setResult] = useState(null);
 >>>>>>> Stashed changes
 
@@ -111,7 +114,11 @@ const Game = () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
   }, [player1, player2, bananas]);
+=======
+  }, [player1, player2]);
+>>>>>>> Stashed changes
 =======
   }, [player1, player2]);
 >>>>>>> Stashed changes
@@ -160,7 +167,10 @@ const Game = () => {
           <h2>Quiz Time! 🧠</h2>
           <img src={quiz.question} alt="Quiz" className="quiz-image" />
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -176,6 +186,9 @@ const Game = () => {
             <button type="submit">Submit</button>
           </form>
           {result && <p>{result}</p>}
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
         </div>
       )}
