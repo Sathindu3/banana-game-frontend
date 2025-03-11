@@ -3,12 +3,16 @@ import axios from "axios";
 import "./Game.css";
 
 const Game = () => {
-  const [player1, setPlayer1] = useState({ x: 50, y: 300, score: 0 });
-  const [player2, setPlayer2] = useState({ x: 200, y: 300, score: 0 });
+  const [player1, setPlayer1] = useState({ x: 50, y: 450, score: 0 });
+  const [player2, setPlayer2] = useState({ x: 200, y: 450, score: 0 });
   const [bananas, setBananas] = useState([]);
   const [quiz, setQuiz] = useState(null);
   const [timeLeft, setTimeLeft] = useState(30);
   const [showQuiz, setShowQuiz] = useState(false);
+<<<<<<< Updated upstream
+=======
+  const [result, setResult] = useState(null);
+>>>>>>> Stashed changes
 
   useEffect(() => {
     generateBananas();
@@ -24,10 +28,14 @@ const Game = () => {
       axios
         .get("https://marcconrad.com/uob/banana/api.php")
         .then((res) => {
-          setQuiz(res.data);
-          setShowQuiz(true);
+          if (res.data && res.data.question && res.data.answer) {
+            setQuiz(res.data);
+            setShowQuiz(true);
+          } else {
+            setResult("❌ Quiz data is not valid.");
+          }
         })
-        .catch((err) => console.error("Error fetching quiz:", err));
+        .catch(() => setResult("❌ Unable to fetch quiz data."));
     }
   }, [timeLeft]);
 
@@ -36,14 +44,14 @@ const Game = () => {
     for (let i = 0; i < 5; i++) {
       newBananas.push({
         x: Math.floor(Math.random() * 500),
-        y: Math.floor(Math.random() * 300) + 50,
+        y: 480, // Placed on the floor
       });
     }
     setBananas(newBananas);
   };
 
   const handleKeyPress = (event) => {
-    const speed = 10;
+    const speed = 20;
     let newPlayer1 = { ...player1 };
     let newPlayer2 = { ...player2 };
 
@@ -83,20 +91,18 @@ const Game = () => {
   };
 
   const checkBananaCollision = (player, playerName) => {
-    const newBananas = bananas.filter((banana) => {
-      const isColliding =
-        Math.abs(player.x - banana.x) < 30 &&
-        Math.abs(player.y - banana.y) < 30;
-      if (isColliding) {
-        if (playerName === "player1")
-          setPlayer1((p) => ({ ...p, score: p.score + 1 }));
-        if (playerName === "player2")
-          setPlayer2((p) => ({ ...p, score: p.score + 1 }));
-      }
-      return !isColliding;
-    });
-
-    setBananas(newBananas);
+    setBananas((prevBananas) =>
+      prevBananas.filter((banana) => {
+        const isColliding =
+          Math.abs(player.x - banana.x) < 30 &&
+          Math.abs(player.y - banana.y) < 30;
+        if (isColliding) {
+          if (playerName === "player1") setPlayer1((p) => ({ ...p, score: p.score + 1 }));
+          if (playerName === "player2") setPlayer2((p) => ({ ...p, score: p.score + 1 }));
+        }
+        return !isColliding;
+      })
+    );
   };
 
   useEffect(() => {
@@ -104,19 +110,22 @@ const Game = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
+<<<<<<< Updated upstream
   }, [player1, player2, bananas]);
+=======
+  }, [player1, player2]);
+>>>>>>> Stashed changes
 
   return (
     <div className="game-container">
       <div className="game-info">
         <p>Time Left: {timeLeft}s</p>
         <p>
-          🐵 Player 1 Score: {player1.score} | 🐵 Player 2 Score:{" "}
-          {player2.score}
+          🐵 Player 1 Score: {player1.score} | 🐵 Player 2 Score: {player2.score}
         </p>
       </div>
       <div className="game-area">
-        <img src="/assets/bg-1.jpg" className="background" alt="background" />
+        <div className="ground"></div>
         <img
           src="/assets/monkey1.png"
           className="player"
@@ -150,6 +159,24 @@ const Game = () => {
         <div className="quiz-popup">
           <h2>Quiz Time! 🧠</h2>
           <img src={quiz.question} alt="Quiz" className="quiz-image" />
+<<<<<<< Updated upstream
+=======
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const answer = e.target.answer.value.trim().toLowerCase();
+              if (answer === quiz.answer.trim().toLowerCase()) {
+                setResult("✅ Correct!");
+              } else {
+                setResult(`❌ Wrong! Correct answer: ${quiz.answer}`);
+              }
+            }}
+          >
+            <input type="text" name="answer" placeholder="Your answer" />
+            <button type="submit">Submit</button>
+          </form>
+          {result && <p>{result}</p>}
+>>>>>>> Stashed changes
         </div>
       )}
     </div>
