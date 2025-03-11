@@ -3,85 +3,94 @@ import axios from "axios";
 import "./Game.css";
 
 const Game = () => {
-  const [player1, setPlayer1] = useState({ x: 50, y: 450, score: 0 });
-  const [player2, setPlayer2] = useState({ x: 200, y: 450, score: 0 });
+  const [player1, setPlayer1] = useState({ x: 50, y: 400, velocityY: 0, score: 0, isJumping: false });
+  const [player2, setPlayer2] = useState({ x: 200, y: 400, velocityY: 0, score: 0, isJumping: false });
   const [bananas, setBananas] = useState([]);
+  const [platforms, setPlatforms] = useState([]);
   const [quiz, setQuiz] = useState(null);
-  const [timeLeft, setTimeLeft] = useState(30);
   const [showQuiz, setShowQuiz] = useState(false);
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
   const [result, setResult] = useState(null);
->>>>>>> Stashed changes
+  const gravity = 1;
 
   useEffect(() => {
-    generateBananas();
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-    }, 1000);
-
-    return () => clearInterval(timer);
+    generatePlatforms();
+    placeBananasOnPlatforms();
   }, []);
 
-  useEffect(() => {
-    if (timeLeft === 0) {
-      axios
-        .get("https://marcconrad.com/uob/banana/api.php")
-        .then((res) => {
-          if (res.data && res.data.question && res.data.answer) {
-            setQuiz(res.data);
-            setShowQuiz(true);
-          } else {
-            setResult("❌ Quiz data is not valid.");
-          }
-        })
-        .catch(() => setResult("❌ Unable to fetch quiz data."));
+  const generatePlatforms = () => {
+    const newPlatforms = [];
+    for (let i = 0; i < 4; i++) {
+      const platform = {
+        x: Math.random() * 400,
+        y: 500 - i * 100, // Staggered heights
+        width: 120,
+        height: 10,
+      };
+      newPlatforms.push(platform);
     }
-  }, [timeLeft]);
+    setPlatforms(newPlatforms);
+  };
 
-  const generateBananas = () => {
-    const newBananas = [];
-    for (let i = 0; i < 5; i++) {
-      newBananas.push({
-        x: Math.floor(Math.random() * 500),
-        y: 480, // Placed on the floor
-      });
+  const placeBananasOnPlatforms = () => {
+    setBananas(
+      platforms.map((platform) => ({
+        x: platform.x + platform.width / 2,
+        y: platform.y - 20, // Just above the platform
+      }))
+    );
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlayer1((prev) => applyPhysics(prev));
+      setPlayer2((prev) => applyPhysics(prev));
+    }, 30);
+    return () => clearInterval(interval);
+  }, []);
+
+  const applyPhysics = (player) => {
+    let newY = player.y + player.velocityY;
+    let newVelocityY = player.velocityY + gravity;
+
+    platforms.forEach((platform) => {
+      if (newY + 40 >= platform.y && newY + 40 <= platform.y + platform.height && player.x + 40 > platform.x && player.x < platform.x + platform.width) {
+        newY = platform.y - 40;
+        newVelocityY = 0;
+      }
+    });
+
+    if (newY >= 500) {
+      newY = 500;
+      newVelocityY = 0;
     }
-    setBananas(newBananas);
+
+    return { ...player, y: newY, velocityY: newVelocityY, isJumping: newVelocityY !== 0 };
   };
 
   const handleKeyPress = (event) => {
-    const speed = 20;
     let newPlayer1 = { ...player1 };
     let newPlayer2 = { ...player2 };
+    const speed = 20;
+    const jumpForce = -15;
 
     switch (event.key) {
-      case "w":
-        newPlayer1.y -= speed;
-        break;
-      case "s":
-        newPlayer1.y += speed;
-        break;
       case "a":
         newPlayer1.x -= speed;
         break;
       case "d":
         newPlayer1.x += speed;
         break;
-      case "ArrowUp":
-        newPlayer2.y -= speed;
-        break;
-      case "ArrowDown":
-        newPlayer2.y += speed;
+      case "w":
+        if (!player1.isJumping) newPlayer1.velocityY = jumpForce;
         break;
       case "ArrowLeft":
         newPlayer2.x -= speed;
         break;
       case "ArrowRight":
         newPlayer2.x += speed;
+        break;
+      case "ArrowUp":
+        if (!player2.isJumping) newPlayer2.velocityY = jumpForce;
         break;
       default:
         break;
@@ -113,85 +122,23 @@ const Game = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-  }, [player1, player2, bananas]);
-=======
   }, [player1, player2]);
->>>>>>> Stashed changes
-=======
-  }, [player1, player2]);
->>>>>>> Stashed changes
 
   return (
     <div className="game-container">
       <div className="game-info">
-        <p>Time Left: {timeLeft}s</p>
-        <p>
-          🐵 Player 1 Score: {player1.score} | 🐵 Player 2 Score: {player2.score}
-        </p>
+        <p>🐵 Player 1 Score: {player1.score} | 🐵 Player 2 Score: {player2.score}</p>
       </div>
       <div className="game-area">
-        <div className="ground"></div>
-        <img
-          src="/assets/monkey1.png"
-          className="player"
-          style={{ left: player1.x, top: player1.y }}
-          alt="Player 1"
-        />
-        <img
-          src="/assets/monkey2.png"
-          className="player"
-          style={{ left: player2.x, top: player2.y }}
-          alt="Player 2"
-        />
+        {platforms.map((platform, index) => (
+          <div key={index} className="platform" style={{ left: platform.x, top: platform.y }} />
+        ))}
+        <img src="/assets/monkey1.png" className="player" style={{ left: player1.x, top: player1.y }} alt="Player 1" />
+        <img src="/assets/monkey2.png" className="player" style={{ left: player2.x, top: player2.y }} alt="Player 2" />
         {bananas.map((banana, index) => (
-          <img
-            key={index}
-            src="/assets/banana.png"
-            className="banana"
-            style={{ left: banana.x, top: banana.y }}
-            alt="Banana"
-          />
+          <img key={index} src="/assets/banana.png" className="banana" style={{ left: banana.x, top: banana.y }} alt="Banana" />
         ))}
       </div>
-
-      {/* {showQuiz && quiz && (
-        <div className="quiz-popup">
-          <h2>Quiz Time! 🧠</h2>
-          <p dangerouslySetInnerHTML={{ __html: quiz.question }}></p>
-        </div>
-      )} */}
-      {showQuiz && quiz && (
-        <div className="quiz-popup">
-          <h2>Quiz Time! 🧠</h2>
-          <img src={quiz.question} alt="Quiz" className="quiz-image" />
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              const answer = e.target.answer.value.trim().toLowerCase();
-              if (answer === quiz.answer.trim().toLowerCase()) {
-                setResult("✅ Correct!");
-              } else {
-                setResult(`❌ Wrong! Correct answer: ${quiz.answer}`);
-              }
-            }}
-          >
-            <input type="text" name="answer" placeholder="Your answer" />
-            <button type="submit">Submit</button>
-          </form>
-          {result && <p>{result}</p>}
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-        </div>
-      )}
     </div>
   );
 };
