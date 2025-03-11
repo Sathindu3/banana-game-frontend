@@ -21,7 +21,8 @@ const Game = () => {
 
   useEffect(() => {
     if (timeLeft === 0) {
-      axios.get("https://marcconrad.com/uob/banana/api.php")
+      axios
+        .get("https://marcconrad.com/uob/banana/api.php")
         .then((res) => {
           setQuiz(res.data);
           setShowQuiz(true);
@@ -47,15 +48,32 @@ const Game = () => {
     let newPlayer2 = { ...player2 };
 
     switch (event.key) {
-      case "w": newPlayer1.y -= speed; break;
-      case "s": newPlayer1.y += speed; break;
-      case "a": newPlayer1.x -= speed; break;
-      case "d": newPlayer1.x += speed; break;
-      case "ArrowUp": newPlayer2.y -= speed; break;
-      case "ArrowDown": newPlayer2.y += speed; break;
-      case "ArrowLeft": newPlayer2.x -= speed; break;
-      case "ArrowRight": newPlayer2.x += speed; break;
-      default: break;
+      case "w":
+        newPlayer1.y -= speed;
+        break;
+      case "s":
+        newPlayer1.y += speed;
+        break;
+      case "a":
+        newPlayer1.x -= speed;
+        break;
+      case "d":
+        newPlayer1.x += speed;
+        break;
+      case "ArrowUp":
+        newPlayer2.y -= speed;
+        break;
+      case "ArrowDown":
+        newPlayer2.y += speed;
+        break;
+      case "ArrowLeft":
+        newPlayer2.x -= speed;
+        break;
+      case "ArrowRight":
+        newPlayer2.x += speed;
+        break;
+      default:
+        break;
     }
 
     setPlayer1(newPlayer1);
@@ -67,10 +85,13 @@ const Game = () => {
   const checkBananaCollision = (player, playerName) => {
     const newBananas = bananas.filter((banana) => {
       const isColliding =
-        Math.abs(player.x - banana.x) < 30 && Math.abs(player.y - banana.y) < 30;
+        Math.abs(player.x - banana.x) < 30 &&
+        Math.abs(player.y - banana.y) < 30;
       if (isColliding) {
-        if (playerName === "player1") setPlayer1((p) => ({ ...p, score: p.score + 1 }));
-        if (playerName === "player2") setPlayer2((p) => ({ ...p, score: p.score + 1 }));
+        if (playerName === "player1")
+          setPlayer1((p) => ({ ...p, score: p.score + 1 }));
+        if (playerName === "player2")
+          setPlayer2((p) => ({ ...p, score: p.score + 1 }));
       }
       return !isColliding;
     });
@@ -89,10 +110,13 @@ const Game = () => {
     <div className="game-container">
       <div className="game-info">
         <p>Time Left: {timeLeft}s</p>
-        <p>🐵 Player 1 Score: {player1.score} | 🐵 Player 2 Score: {player2.score}</p>
+        <p>
+          🐵 Player 1 Score: {player1.score} | 🐵 Player 2 Score:{" "}
+          {player2.score}
+        </p>
       </div>
       <div className="game-area">
-        <img src="/assets/background.jpg" className="background" alt="background" />
+        <img src="/assets/bg-1.jpg" className="background" alt="background" />
         <img
           src="/assets/monkey1.png"
           className="player"
@@ -116,10 +140,16 @@ const Game = () => {
         ))}
       </div>
 
-      {showQuiz && quiz && (
+      {/* {showQuiz && quiz && (
         <div className="quiz-popup">
           <h2>Quiz Time! 🧠</h2>
           <p dangerouslySetInnerHTML={{ __html: quiz.question }}></p>
+        </div>
+      )} */}
+      {showQuiz && quiz && (
+        <div className="quiz-popup">
+          <h2>Quiz Time! 🧠</h2>
+          <img src={quiz.question} alt="Quiz" className="quiz-image" />
         </div>
       )}
     </div>
