@@ -9,6 +9,8 @@ const Game = () => {
   const [quiz, setQuiz] = useState(null);
   const [timeLeft, setTimeLeft] = useState(30);
   const [showQuiz, setShowQuiz] = useState(false);
+  const [userAnswer, setUserAnswer] = useState("");
+  const [result, setResult] = useState(null);
 
   useEffect(() => {
     generateBananas();
@@ -106,6 +108,23 @@ const Game = () => {
     };
   }, [player1, player2, bananas]);
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (!quiz || !quiz.answer) {
+      setResult("No quiz data available.");
+      return;
+    }
+
+    if (
+      userAnswer.trim() &&
+      quiz.answer.toLowerCase() === userAnswer.trim().toLowerCase()
+    ) {
+      setResult("✅ Correct!");
+    } else {
+      setResult("❌ Incorrect. The correct answer was: " + quiz.answer);
+    }
+  };
+
   return (
     <div className="game-container">
       <div className="game-info">
@@ -140,16 +159,21 @@ const Game = () => {
         ))}
       </div>
 
-      {/* {showQuiz && quiz && (
-        <div className="quiz-popup">
-          <h2>Quiz Time! 🧠</h2>
-          <p dangerouslySetInnerHTML={{ __html: quiz.question }}></p>
-        </div>
-      )} */}
       {showQuiz && quiz && (
         <div className="quiz-popup">
           <h2>Quiz Time! 🧠</h2>
           <img src={quiz.question} alt="Quiz" className="quiz-image" />
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              value={userAnswer}
+              onChange={(e) => setUserAnswer(e.target.value)}
+              placeholder="Enter your answer"
+              required
+            />
+            <button type="submit">Submit</button>
+          </form>
+          {result && <p className="quiz-result">{result}</p>}
         </div>
       )}
     </div>

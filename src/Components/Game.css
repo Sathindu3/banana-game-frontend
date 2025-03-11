@@ -9,8 +9,8 @@
   }
   
   .game-area {
-    width: 600px;
-    height: 400px;
+    width: 1200px;
+    height: 800px;
     position: relative;
     border: 2px solid black;
     margin: auto;
@@ -24,14 +24,14 @@
   }
   
   .player {
-    width: 40px;
-    height: 40px;
+    width:100px;
+    height: 100px;
     position: absolute;
   }
   
   .banana {
-    width: 30px;
-    height: 30px;
+    width: 100px;
+    height: 100px;
     position: absolute;
   }
   
@@ -59,7 +59,7 @@
   }
   
   .quiz-image {
-    width: 300px;  /* Adjust size as needed */
+    width: 600px;  /* Adjust size as needed */
     height: auto;
     display: block;
     margin: auto;
