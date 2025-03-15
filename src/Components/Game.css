@@ -19,10 +19,6 @@
   height: 100%;
   position: relative;
 }
-
-
-
-
 .quiz-container {
   position: absolute;
   top: 50%;
@@ -33,7 +29,6 @@
   border: 2px solid black;
   text-align: center;
 }
-
 .quiz-btn {
   display: block;
   width: 100%;
@@ -43,10 +38,6 @@
   border: none;
   cursor: pointer;
 }
-
-
-
-
 .platform {
   position: absolute;
   width: 120px;
@@ -75,4 +66,9 @@
   padding: 20px;
   border: 2px solid black;
   text-align: center;
+}
+
+.chest {
+  width: 60px;
+  height: 60px;
 }
