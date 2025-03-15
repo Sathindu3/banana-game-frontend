@@ -1,6 +1,6 @@
 .game-container {
-  width: 600px;
-  height: 600px;
+  width: 1200px;
+  height: 1200px;
   border: 2px solid black;
   position: relative;
   overflow: hidden;
@@ -20,6 +20,33 @@
   position: relative;
 }
 
+
+
+
+.quiz-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border: 2px solid black;
+  text-align: center;
+}
+
+.quiz-btn {
+  display: block;
+  width: 100%;
+  margin: 5px 0;
+  padding: 10px;
+  background: lightblue;
+  border: none;
+  cursor: pointer;
+}
+
+
+
+
 .platform {
   position: absolute;
   width: 120px;
@@ -37,4 +64,15 @@
   position: absolute;
   width: 30px;
   height: 30px;
+}
+
+.quiz-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border: 2px solid black;
+  text-align: center;
 }

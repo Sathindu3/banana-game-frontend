@@ -3,39 +3,31 @@ import axios from "axios";
 import "./Game.css";
 
 const Game = () => {
-  const [player1, setPlayer1] = useState({ x: 50, y: 400, velocityY: 0, score: 0, isJumping: false });
-  const [player2, setPlayer2] = useState({ x: 200, y: 400, velocityY: 0, score: 0, isJumping: false });
+  const [player1, setPlayer1] = useState({ x: 50, y: 500, velocityY: 0, score: 0, isJumping: false });
+  const [player2, setPlayer2] = useState({ x: 200, y: 500, velocityY: 0, score: 0, isJumping: false });
   const [bananas, setBananas] = useState([]);
-  const [platforms, setPlatforms] = useState([]);
   const [quiz, setQuiz] = useState(null);
   const [showQuiz, setShowQuiz] = useState(false);
-  const [result, setResult] = useState(null);
+  const [timer, setTimer] = useState(30);
   const gravity = 1;
 
+  // Platforms
+  const platforms = [
+    { x: 100, y: 450, width: 150, height: 10 },
+    { x: 250, y: 350, width: 150, height: 10 },
+    { x: 400, y: 250, width: 150, height: 10 },
+    { x: 550, y: 150, width: 150, height: 10 },
+  ];
+
   useEffect(() => {
-    generatePlatforms();
     placeBananasOnPlatforms();
   }, []);
-
-  const generatePlatforms = () => {
-    const newPlatforms = [];
-    for (let i = 0; i < 4; i++) {
-      const platform = {
-        x: Math.random() * 400,
-        y: 500 - i * 100, // Staggered heights
-        width: 120,
-        height: 10,
-      };
-      newPlatforms.push(platform);
-    }
-    setPlatforms(newPlatforms);
-  };
 
   const placeBananasOnPlatforms = () => {
     setBananas(
       platforms.map((platform) => ({
-        x: platform.x + platform.width / 2,
-        y: platform.y - 20, // Just above the platform
+        x: platform.x + platform.width / 2 - 15,
+        y: platform.y - 30,
       }))
     );
   };
@@ -51,66 +43,86 @@ const Game = () => {
   const applyPhysics = (player) => {
     let newY = player.y + player.velocityY;
     let newVelocityY = player.velocityY + gravity;
+    let isOnPlatform = false;
 
     platforms.forEach((platform) => {
-      if (newY + 40 >= platform.y && newY + 40 <= platform.y + platform.height && player.x + 40 > platform.x && player.x < platform.x + platform.width) {
+      if (
+        newY + 40 >= platform.y &&
+        player.y + 40 <= platform.y &&
+        player.x + 40 > platform.x &&
+        player.x < platform.x + platform.width
+      ) {
         newY = platform.y - 40;
         newVelocityY = 0;
+        isOnPlatform = true;
       }
     });
 
     if (newY >= 500) {
       newY = 500;
       newVelocityY = 0;
+      isOnPlatform = true;
     }
 
-    return { ...player, y: newY, velocityY: newVelocityY, isJumping: newVelocityY !== 0 };
+    return { ...player, y: newY, velocityY: newVelocityY, isJumping: !isOnPlatform };
   };
 
   const handleKeyPress = (event) => {
-    let newPlayer1 = { ...player1 };
-    let newPlayer2 = { ...player2 };
-    const speed = 20;
+    setPlayer1((prev) => {
+      if (["a", "d", "w"].includes(event.key)) {
+        return movePlayer(prev, event.key, "player1");
+      }
+      return prev;
+    });
+  
+    setPlayer2((prev) => {
+      if (["ArrowLeft", "ArrowRight", "ArrowUp"].includes(event.key)) {
+        return movePlayer(prev, event.key, "player2");
+      }
+      return prev;
+    });
+  };
+  
+
+  const movePlayer = (player, key, playerName) => {
+    let newPlayer = { ...player };
+    const speed = 10;
     const jumpForce = -15;
 
-    switch (event.key) {
+    switch (key) {
       case "a":
-        newPlayer1.x -= speed;
+        newPlayer.x -= speed;
         break;
       case "d":
-        newPlayer1.x += speed;
+        newPlayer.x += speed;
         break;
       case "w":
-        if (!player1.isJumping) newPlayer1.velocityY = jumpForce;
+        if (!player.isJumping) newPlayer.velocityY = jumpForce;
         break;
       case "ArrowLeft":
-        newPlayer2.x -= speed;
+        newPlayer.x -= speed;
         break;
       case "ArrowRight":
-        newPlayer2.x += speed;
+        newPlayer.x += speed;
         break;
       case "ArrowUp":
-        if (!player2.isJumping) newPlayer2.velocityY = jumpForce;
+        if (!player.isJumping) newPlayer.velocityY = jumpForce;
         break;
       default:
         break;
     }
-
-    setPlayer1(newPlayer1);
-    setPlayer2(newPlayer2);
-    checkBananaCollision(newPlayer1, "player1");
-    checkBananaCollision(newPlayer2, "player2");
+    checkBananaCollision(newPlayer, playerName);
+    return newPlayer;
   };
 
   const checkBananaCollision = (player, playerName) => {
     setBananas((prevBananas) =>
       prevBananas.filter((banana) => {
         const isColliding =
-          Math.abs(player.x - banana.x) < 30 &&
-          Math.abs(player.y - banana.y) < 30;
+          Math.abs(player.x - banana.x) < 30 && Math.abs(player.y - banana.y) < 30;
         if (isColliding) {
-          if (playerName === "player1") setPlayer1((p) => ({ ...p, score: p.score + 1 }));
-          if (playerName === "player2") setPlayer2((p) => ({ ...p, score: p.score + 1 }));
+          if (playerName === "player1") setPlayer1((p) => ({ ...p, score: p.score + 10 }));
+          if (playerName === "player2") setPlayer2((p) => ({ ...p, score: p.score + 10 }));
         }
         return !isColliding;
       })
@@ -122,11 +134,36 @@ const Game = () => {
     return () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
-  }, [player1, player2]);
+  }, []);
+
+  useEffect(() => {
+    const countdown = setInterval(() => {
+      setTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(countdown);
+          fetchQuiz();
+          setShowQuiz(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(countdown);
+  }, []);
+
+  const fetchQuiz = async () => {
+    try {
+      const response = await axios.get("https://marcconrad.com/uob/banana/api.php");
+      setQuiz(response.data);
+    } catch (error) {
+      console.error("Error fetching quiz", error);
+    }
+  };
 
   return (
     <div className="game-container">
       <div className="game-info">
+        <p>⏳ Time Left: {timer}s</p>
         <p>🐵 Player 1 Score: {player1.score} | 🐵 Player 2 Score: {player2.score}</p>
       </div>
       <div className="game-area">
@@ -139,6 +176,11 @@ const Game = () => {
           <img key={index} src="/assets/banana.png" className="banana" style={{ left: banana.x, top: banana.y }} alt="Banana" />
         ))}
       </div>
+      {showQuiz && quiz && (
+        <div className="quiz-container">
+          <h3>{quiz.question}</h3>
+        </div>
+      )}
     </div>
   );
 };
