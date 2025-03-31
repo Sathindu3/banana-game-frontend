@@ -8,24 +8,20 @@ const Game = () => {
     y: 500,
     velocityY: 0,
     score: 0,
-    isJumping: false,
+    isJumping: false
   });
-  const [player2, setPlayer2] = useState({
-    x: 300,
-    y: 500,
-    velocityY: 0,
-    score: 0,
-    isJumping: false,
-  });
+  const [player2, setPlayer2] = useState({ x: 300, y: 500, velocityY: 0, score: 0, isJumping: false });
   const [chests, setChests] = useState([]);
   const [bananas, setBananas] = useState([]);
   const [quiz, setQuiz] = useState(null);
   const [showQuiz, setShowQuiz] = useState(false);
   const [timer, setTimer] = useState(60);
+  const [answer, setAnswer] = useState("");  // To store the player's answer
+  const [feedback, setFeedback] = useState("");  // Feedback message: "Correct!" or "Try again!"
   const gravity = 1;
 
   const platforms = [
-    { x: 100, y: 450, width: 150, height: 10 },
+    { x: 100, y: 450, width: 550, height: 10 },
     { x: 200, y: 350, width: 150, height: 10 },
     { x: 300, y: 250, width: 150, height: 10 },
     { x: 400, y: 150, width: 150, height: 10 },
@@ -38,19 +34,11 @@ const Game = () => {
   }, []);
 
   const placeChests = () => {
-    setChests([
-      { x: 200, y: 350 },
-      { x: 300, y: 250 },
-      { x: 400, y: 150 },
-    ]);
+    setChests([{ x: 200, y: 350 }, { x: 300, y: 250 }, { x: 400, y: 150 }]);
   };
 
   const placeBananas = () => {
-    setBananas([
-      { x: 150, y: 450 },
-      { x: 250, y: 350 },
-      { x: 350, y: 250 },
-    ]);
+    setBananas([{ x: 150, y: 450 }, { x: 250, y: 350 }, { x: 350, y: 250 }]);
   };
 
   useEffect(() => {
@@ -79,12 +67,7 @@ const Game = () => {
       }
     });
 
-    return {
-      ...player,
-      y: newY,
-      velocityY: newVelocityY,
-      isJumping: !isOnPlatform,
-    };
+    return { ...player, y: newY, velocityY: newVelocityY, isJumping: !isOnPlatform };
   };
 
   const handleKeyPress = (event) => {
@@ -94,12 +77,12 @@ const Game = () => {
       setPlayer2((prev) => movePlayer(prev, event.key, setPlayer2));
     }
   };
-  
+
   const movePlayer = (player, key, setPlayer) => {
     let newPlayer = { ...player };
     const speed = 10;
     const jumpForce = -15;
-  
+
     switch (key) {
       case "a":
       case "ArrowLeft":
@@ -116,19 +99,15 @@ const Game = () => {
       default:
         break;
     }
-  
-    checkBananaCollision(newPlayer, setPlayer);
+
     checkChestCollision(newPlayer);
     return newPlayer;
   };
-  
 
   const checkChestCollision = (player) => {
     setChests((prevChests) =>
       prevChests.filter((chest) => {
-        const isColliding =
-          Math.abs(player.x - chest.x) < 30 &&
-          Math.abs(player.y - chest.y) < 30;
+        const isColliding = Math.abs(player.x - chest.x) < 30 && Math.abs(player.y - chest.y) < 30;
         if (isColliding) {
           fetchQuiz();
         }
@@ -137,26 +116,31 @@ const Game = () => {
     );
   };
 
-  const checkBananaCollision = (player, setPlayer) => {
-    let collected = false;
-    setBananas((prevBananas) =>
-      prevBananas.filter((banana) => {
-        const isColliding =
-          Math.abs(player.x - banana.x) < 30 &&
-          Math.abs(player.y - banana.y) < 30;
-        if (isColliding) {
-          collected = true;
-          return false; // Remove collected banana
-        }
-        return true;
-      })
-    );
-  
-    if (collected) {
-      setPlayer((prev) => ({ ...prev, score: prev.score + 1 }));
+  const fetchQuiz = async () => {
+    try {
+      const response = await axios.get("http://localhost:5062/api/Game/quiz");
+      setQuiz(response.data.data);
+      setShowQuiz(true);
+      setFeedback("");  // Reset feedback when a new quiz is fetched
+    } catch (error) {
+      console.error("Error fetching quiz", error);
     }
   };
-  
+
+  const handleAnswerChange = (e) => {
+    setAnswer(e.target.value);
+  };
+
+  const verifyAnswer = () => {
+    if (answer === quiz.solution.toString()) {
+      setFeedback("Correct!");
+      setPlayer1((prev) => ({ ...prev, score: prev.score + 10 })); // Add score if correct
+      setShowQuiz(false); // Hide quiz after answering correctly
+    } else {
+      setFeedback("Try again!");
+      setAnswer(""); // Reset the input for a retry
+    }
+  };
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyPress);
@@ -164,43 +148,6 @@ const Game = () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
   }, []);
-
-  useEffect(() => {
-    const countdown = setInterval(() => {
-      setTimer((prev) => {
-        if (prev <= 1) {
-          clearInterval(countdown);
-          determineWinner();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(countdown);
-  }, []);
-
-  const fetchQuiz = async () => {
-    try {
-      const response = await axios.get(
-        "https://marcconrad.com/uob/banana/api.php"
-      );
-      setQuiz(response.data);
-      setShowQuiz(true);
-      setTimeout(() => setShowQuiz(false), 5000);
-    } catch (error) {
-      console.error("Error fetching quiz", error);
-    }
-  };
-
-  const determineWinner = () => {
-    alert(
-      player1.score > player2.score
-        ? "Player 1 Wins!"
-        : player2.score > player1.score
-        ? "Player 2 Wins!"
-        : "It's a Tie!"
-    );
-  };
 
   return (
     <div className="game-container">
@@ -221,7 +168,19 @@ const Game = () => {
           <img key={index} src="/assets/banana.png" className="banana" style={{ left: banana.x, top: banana.y }} alt="Banana" />
         ))}
       </div>
-      {showQuiz && quiz && <div className="quiz-container"><h3>{quiz.question}</h3></div>}
+      {showQuiz && quiz && (
+        <div className="quiz-container">
+          <img src={quiz.question} alt="Quiz" />
+          <input
+            type="number"
+            value={answer}
+            onChange={handleAnswerChange}
+            placeholder="Enter your answer"
+          />
+          <button onClick={verifyAnswer}>Submit</button>
+          <p>{feedback}</p>
+        </div>
+      )}
     </div>
   );
 };
