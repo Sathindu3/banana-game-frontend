@@ -1,14 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import "../Resources/Home.css";
 
 const Home = () => {
   return (
-    <div style={{ textAlign: "center", padding: "20px" }}>
+    <div className="home-div" style={{ textAlign: "center", padding: "20px" }}>
       <h1>Welcome to the Banana Game! 🍌</h1>
       <p>Collect bananas, answer quizzes, and have fun!</p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "10px", alignItems: "center", marginTop: "20px" }}>
-        <Link to="/login-signup">
+        <Link to="/login">
           <button style={buttonStyle}>🎮 Play</button>
         </Link>
         <Link to="/help">

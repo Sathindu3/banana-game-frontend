@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./Game.css";
+import backgroundMusic from "../Resources/background.mp3";
+import jumpSound from "../Resources/jump.mp3";
+import collectSound from "../Resources/collect.mp3";
 
 const Game = () => {
   const [player1, setPlayer1] = useState({
@@ -26,6 +29,18 @@ const Game = () => {
     { x: 300, y: 250, width: 150, height: 10 },
     { x: 400, y: 150, width: 150, height: 10 },
     { x: 100, y: 550, width: 550, height: 10 },
+
+    { x: 500, y: 450, width: 550, height: 10 },
+    { x: 800, y: 350, width: 150, height: 10 },
+    { x: 600, y: 250, width: 150, height: 10 },
+    { x: 750, y: 150, width: 150, height: 10 },
+    { x: 900, y: 550, width: 550, height: 10 },
+
+    { x: 200, y: 80, width: 550, height: 10 },
+    { x: 300, y: -20, width: 150, height: 10 },
+    { x: 500, y: -100, width: 150, height: 10 },
+    { x: 250, y: -150, width: 150, height: 10 },
+    { x: 400, y: -200, width: 550, height: 10 },
   ];
 
   useEffect(() => {
@@ -38,7 +53,7 @@ const Game = () => {
   };
 
   const placeBananas = () => {
-    setBananas([{ x: 150, y: 450 }, { x: 250, y: 350 }, { x: 350, y: 250 }]);
+    setBananas([{ x: 150, y: 400 }, { x: 250, y: 300 }, { x: 350, y: 200 }]);
   };
 
   useEffect(() => {
@@ -73,8 +88,10 @@ const Game = () => {
   const handleKeyPress = (event) => {
     if (["a", "d", "w"].includes(event.key)) {
       setPlayer1((prev) => movePlayer(prev, event.key, setPlayer1));
+      new Audio(jumpSound).play();
     } else if (["ArrowLeft", "ArrowRight", "ArrowUp"].includes(event.key)) {
       setPlayer2((prev) => movePlayer(prev, event.key, setPlayer2));
+      new Audio(jumpSound).play();
     }
   };
 
@@ -102,6 +119,7 @@ const Game = () => {
 
     checkChestCollision(newPlayer);
     return newPlayer;
+    
   };
 
   const checkChestCollision = (player) => {
@@ -149,6 +167,46 @@ const Game = () => {
     };
   }, []);
 
+  // Music
+
+  useEffect(() => {
+    const bgMusic = new Audio(backgroundMusic);
+    bgMusic.loop = true;
+  
+    const playMusic = () => {
+      bgMusic.play().catch((error) => console.error("Audio play failed:", error));
+      document.removeEventListener("click", playMusic);
+    };
+  
+    document.addEventListener("click", playMusic);
+    
+    return () => {
+      bgMusic.pause();
+      document.removeEventListener("click", playMusic);
+    };
+  }, []);
+
+
+// collect banana
+useEffect(() => {
+  const checkBananaCollection = (player, setPlayer) => {
+    setBananas((prevBananas) => {
+      return prevBananas.map((banana) => {
+        if (!banana.collected && Math.abs(player.x - banana.x) < 30 && Math.abs(player.y - banana.y) < 30) {
+          new Audio(collectSound).play();
+          setPlayer((prev) => ({ ...prev, score: prev.score + 10 })); // Increase score
+          return { ...banana, collected: true }; // Mark banana as collected
+        }
+        return banana;
+      });
+    });
+  };
+
+  checkBananaCollection(player1, setPlayer1);
+  checkBananaCollection(player2, setPlayer2);
+}, [player1, player2, bananas]);
+
+
   return (
     <div className="game-container">
       <div className="game-info">
@@ -164,9 +222,11 @@ const Game = () => {
         {chests.map((chest, index) => (
           <img key={index} src="/assets/chest.png" className="chest" style={{ left: chest.x, top: chest.y }} alt="Chest" />
         ))}
-        {bananas.map((banana, index) => (
-          <img key={index} src="/assets/banana.png" className="banana" style={{ left: banana.x, top: banana.y }} alt="Banana" />
-        ))}
+       {bananas
+  .filter((banana) => !banana.collected) // Only render uncollected bananas
+  .map((banana, index) => (
+    <img key={index} src="/assets/banana.png" className="banana" style={{ left: banana.x, top: banana.y }} alt="Banana" />
+))}
       </div>
       {showQuiz && quiz && (
         <div className="quiz-container">
