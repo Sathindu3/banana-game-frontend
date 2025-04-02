@@ -1,30 +1,86 @@
 import React, { useState } from "react";
-import axios from "axios";
+import authService from "../Services/authService"; // Assuming you have this service for API calls
 
-const Register = () => {
-  const [playerName, setPlayerName] = useState("");
+const Register = ({ setPlayer1 }) => {
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");  // New field for Username
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
+  const handleRegister = async () => {
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    const playerData = {
+      email,
+      username,  // Send username along with email and password
+      password
+    };
+
     try {
-      await axios.post("http://localhost:5062/api/auth/register", { playerName, email, password });
-      alert("Registration successful!");
+      const data = await authService.register(playerData);  // Adjusted to send player data
+      setSuccessMessage("Registration successful! You can now log in.");
+      setEmail("");
+      setUsername("");  // Reset username
+      setPassword("");
+      setConfirmPassword("");
+      setError("");
     } catch (error) {
-      alert("Error registering user");
+      setError("Registration failed! Please try again.");
+      setSuccessMessage("");
     }
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleRegister}>
-        <input type="text" placeholder="Player Name" value={playerName} onChange={(e) => setPlayerName(e.target.value)} required />
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button type="submit">Register</button>
-      </form>
+    <div className="register-container">
+      <h2>Sign Up</h2>
+      
+      {error && <p className="error">{error}</p>}
+      {successMessage && <p className="success">{successMessage}</p>}
+      
+      <div className="input-group">
+        <input
+          type="text"
+          placeholder="Username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}  // Handle username change
+        />
+      </div>
+      
+      <div className="input-group">
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </div>
+      <div className="input-group">
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+      </div>
+      <div className="input-group">
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+      </div>
+      
+      <button onClick={handleRegister}>Register</button>
+      
+      <div className="login-link">
+        <p>Already have an account? <a href="/login">Login here</a></p>
+      </div>
     </div>
   );
 };

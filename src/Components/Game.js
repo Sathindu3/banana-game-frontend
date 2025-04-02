@@ -23,24 +23,28 @@ const Game = () => {
   const [feedback, setFeedback] = useState("");  // Feedback message: "Correct!" or "Try again!"
   const gravity = 1;
 
+  const ground = [
+    { x: 0, y: 700, width: 150, height: 10 },
+  ];
+
   const platforms = [
-    { x: 100, y: 450, width: 550, height: 10 },
+    { x: 100, y: 450, width: 150, height: 10 },
     { x: 200, y: 350, width: 150, height: 10 },
     { x: 300, y: 250, width: 150, height: 10 },
     { x: 400, y: 150, width: 150, height: 10 },
-    { x: 100, y: 550, width: 550, height: 10 },
+    { x: 100, y: 550, width: 150, height: 10 },
 
-    { x: 500, y: 450, width: 550, height: 10 },
+    { x: 500, y: 450, width: 150, height: 10 },
     { x: 800, y: 350, width: 150, height: 10 },
     { x: 600, y: 250, width: 150, height: 10 },
     { x: 750, y: 150, width: 150, height: 10 },
-    { x: 900, y: 550, width: 550, height: 10 },
+    { x: 900, y: 550, width: 150, height: 10 },
 
-    { x: 200, y: 80, width: 550, height: 10 },
+    { x: 200, y: 80, width: 150, height: 10 },
     { x: 300, y: -20, width: 150, height: 10 },
     { x: 500, y: -100, width: 150, height: 10 },
     { x: 250, y: -150, width: 150, height: 10 },
-    { x: 400, y: -200, width: 550, height: 10 },
+    { x: 400, y: -200, width: 150, height: 10 },
   ];
 
   useEffect(() => {
@@ -49,7 +53,7 @@ const Game = () => {
   }, []);
 
   const placeChests = () => {
-    setChests([{ x: 200, y: 350 }, { x: 300, y: 250 }, { x: 400, y: 150 }]);
+    setChests([{ x: 200, y: 300 }, { x: 300, y: 200 }, { x: 400, y: 100 }]);
   };
 
   const placeBananas = () => {
@@ -64,11 +68,14 @@ const Game = () => {
     return () => clearInterval(interval);
   }, []);
 
+ 
+
   const applyPhysics = (player) => {
     let newY = player.y + player.velocityY;
     let newVelocityY = player.velocityY + gravity;
     let isOnPlatform = false;
-
+  
+    // Check collision with platforms
     platforms.forEach((platform) => {
       if (
         newY + 40 >= platform.y &&
@@ -81,9 +88,21 @@ const Game = () => {
         isOnPlatform = true;
       }
     });
-
+  
+    // Check collision with ground
+    ground.forEach((groundItem) => {
+      if (newY + 40 >= groundItem.y) {
+        newY = groundItem.y - 40;
+        newVelocityY = 0;
+        isOnPlatform = true;
+      }
+    });
+  
+    // Prevent jumping unless on a platform or ground
     return { ...player, y: newY, velocityY: newVelocityY, isJumping: !isOnPlatform };
   };
+  
+  
 
   const handleKeyPress = (event) => {
     if (["a", "d", "w"].includes(event.key)) {
@@ -95,11 +114,13 @@ const Game = () => {
     }
   };
 
+  
+
   const movePlayer = (player, key, setPlayer) => {
     let newPlayer = { ...player };
     const speed = 10;
     const jumpForce = -15;
-
+  
     switch (key) {
       case "a":
       case "ArrowLeft":
@@ -111,16 +132,19 @@ const Game = () => {
         break;
       case "w":
       case "ArrowUp":
-        if (!player.isJumping) newPlayer.velocityY = jumpForce;
+        if (!player.isJumping) { // Prevent jumping in mid-air
+          newPlayer.velocityY = jumpForce;
+          newPlayer.isJumping = true;
+        }
         break;
       default:
         break;
     }
-
+  
     checkChestCollision(newPlayer);
     return newPlayer;
-    
   };
+  
 
   const checkChestCollision = (player) => {
     setChests((prevChests) =>
@@ -167,6 +191,8 @@ const Game = () => {
     };
   }, []);
 
+
+  
   // Music
 
   useEffect(() => {
@@ -189,22 +215,28 @@ const Game = () => {
 
 // collect banana
 useEffect(() => {
+  let collected = false;
+
   const checkBananaCollection = (player, setPlayer) => {
-    setBananas((prevBananas) => {
-      return prevBananas.map((banana) => {
+    setBananas((prevBananas) =>
+      prevBananas.map((banana) => {
         if (!banana.collected && Math.abs(player.x - banana.x) < 30 && Math.abs(player.y - banana.y) < 30) {
           new Audio(collectSound).play();
           setPlayer((prev) => ({ ...prev, score: prev.score + 10 })); // Increase score
+          collected = true;
           return { ...banana, collected: true }; // Mark banana as collected
         }
         return banana;
-      });
-    });
+      })
+    );
   };
 
   checkBananaCollection(player1, setPlayer1);
   checkBananaCollection(player2, setPlayer2);
-}, [player1, player2, bananas]);
+
+  // Only trigger state update if a banana was collected
+  if (!collected) return;
+}, [player1, player2]);
 
 
   return (
@@ -214,6 +246,9 @@ useEffect(() => {
         <p>🐵 Player 1 Score: {player1.score} | 🐵 Player 2 Score: {player2.score}</p>
       </div>
       <div className="game-area">
+      {ground.map((ground, index) => (
+          <div key={index} className="ground" style={{ left: ground.x, top: ground.y }} />
+        ))}
         {platforms.map((platform, index) => (
           <div key={index} className="platform" style={{ left: platform.x, top: platform.y }} />
         ))}
