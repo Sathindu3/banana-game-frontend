@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import authService from "../Services/authService"; 
+import authService from "../Services/authService";
 import "../Resources/Login.css";
 
 const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
@@ -28,20 +28,35 @@ const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
     try {
       // Make the API call to log the player in
       const data = await authService.login(players[playerKey].email, players[playerKey].password);
-      
-      // Set the player data (this could be the user object or token)
-      setPlayer(data.user);
+
+      // Assuming the response contains the username and player ID
+      const playerData = {
+        username: data?.username || "Unknown",  // Ensure username is correctly accessed
+        email: players[playerKey].email,
+        id: data?.id || null, // Adding player ID
+        token: localStorage.getItem("token"),  // Fetching token from localStorage
+      };
+
+      // Set the player data using the passed in setPlayer function
+      setPlayer(playerData);
 
       // Clear the input fields after successful login
       setPlayers((prev) => ({
         ...prev,
         [playerKey]: { email: "", password: "" },
       }));
+
+      // Optionally handle after both players log in and proceed to game
+      if (playerKey === "player2") {
+        // Redirect to game page or other actions after both players log in
+        window.location.href = "/game"; // Example redirection
+      }
+
     } catch (error) {
       // Handle errors and display the error message
       setErrors((prev) => ({
         ...prev,
-        [playerKey]: error.response?.data?.message || "Login failed! Check credentials.",
+        [playerKey]: error?.response?.data?.message || "Login failed! Check credentials.",
       }));
     } finally {
       setLoading((prev) => ({ ...prev, [playerKey]: false }));
@@ -86,16 +101,15 @@ const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
             <button
               onClick={() => handleLogin(playerKey, playerKey === "player1" ? setPlayer1 : setPlayer2)}
               disabled={loading[playerKey]}
-              className={`w-full py-2 rounded-lg text-white font-bold transition ${
-                loading[playerKey]
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500 hover:bg-blue-600"
+              className={`w-full py-2 rounded-lg text-white font-bold transition ${loading[playerKey]
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-500 hover:bg-blue-600"
               }`}
             >
               {loading[playerKey] ? "Logging in..." : `Login as Player ${index + 1}`}
             </button>
           </div>
-        ))}
+        ))}z
       </div>
 
       {/* Display character images */}

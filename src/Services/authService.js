@@ -4,13 +4,26 @@ const API_URL = "http://localhost:5062/api/auth"; // Ensure backend URL is corre
 
 const login = async (email, password) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, {
-      email,   // Send email and password in the request body
+    // Make API call to login endpoint
+    const response = await axios.post('http://localhost:5062/api/auth/login', {
+      email,
       password
     });
-    return response.data;  // Assuming response has a user object
+
+    // Log the response for debugging
+    console.log("Login API Response:", response.data);
+
+    // Assuming response contains a user object and a token
+    if (response.data.token) {
+      localStorage.setItem("token", response.data.token);  // Store token in localStorage
+    }
+
+    return response.data.user;  // Return the user object for player details
   } catch (error) {
-    throw error.response ? error.response.data : "Login failed";
+    console.error("Login API Error:", error);
+
+    // Throwing error with a more detailed message
+    throw error.response ? error.response.data : "Login failed, please check your credentials.";
   }
 };
 
@@ -28,7 +41,7 @@ const logout = () => {
 };
 
 const getCurrentUser = () => {
-  return localStorage.getItem("token");
+  return localStorage.getItem("token");  // Retrieve token from localStorage if logged in
 };
 
 export default { login, register, logout, getCurrentUser };
