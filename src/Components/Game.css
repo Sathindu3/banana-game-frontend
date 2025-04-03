@@ -90,3 +90,12 @@
   width: 60px;
   height: 60px;
 }
+
+.ground {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 10px;
+  background-color: #228b22; /* Green color for the ground */
+}

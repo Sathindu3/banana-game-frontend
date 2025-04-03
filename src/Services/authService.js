@@ -2,23 +2,20 @@ import axios from "axios";
 
 const API_URL = "http://localhost:5062/api/auth"; // Ensure backend URL is correct
 
+// Login function - handles session-based authentication
 const login = async (email, password) => {
   try {
     // Make API call to login endpoint
-    const response = await axios.post('http://localhost:5062/api/auth/login', {
+    const response = await axios.post(`${API_URL}/login`, {
       email,
       password
-    });
+    }, { withCredentials: true }); // Include credentials (cookies) in the request
 
     // Log the response for debugging
     console.log("Login API Response:", response.data);
 
-    // Assuming response contains a user object and a token
-    if (response.data.token) {
-      localStorage.setItem("token", response.data.token);  // Store token in localStorage
-    }
-
-    return response.data.user;  // Return the user object for player details
+    // The backend will handle the session management, no need to store token
+    return response.data;  // Return the user object for player details
   } catch (error) {
     console.error("Login API Error:", error);
 
@@ -27,6 +24,7 @@ const login = async (email, password) => {
   }
 };
 
+// Register function
 const register = async (playerData) => {
   try {
     const response = await axios.post(`${API_URL}/register`, playerData);  // Send playerData including email, password, and username
@@ -36,12 +34,21 @@ const register = async (playerData) => {
   }
 };
 
-const logout = () => {
-  localStorage.removeItem("token");
+// Logout function - clears the session by making a logout API call
+const logout = async () => {
+  try {
+    // Make a call to the backend to destroy the session
+    await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });  // Include credentials in the request
+  } catch (error) {
+    console.error("Logout Error:", error);
+  }
 };
 
+// Get the current user - returns user data based on the session
 const getCurrentUser = () => {
-  return localStorage.getItem("token");  // Retrieve token from localStorage if logged in
+  // Since session data is handled server-side, the front-end doesn't need to track it
+  // The backend will manage the session and include user info in responses
+  return null;  // No need to retrieve token from localStorage
 };
 
 export default { login, register, logout, getCurrentUser };

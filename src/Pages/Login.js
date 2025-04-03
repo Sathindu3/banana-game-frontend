@@ -8,7 +8,7 @@ const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
     player2: { email: "", password: "" },
   });
 
-  const [errors, setErrors] = useState({ player1: "", player2: "" });
+  const [errors, setErrors] = useState(""); // General error state
   const [loading, setLoading] = useState({ player1: false, player2: false });
 
   // Handle input changes for both players
@@ -23,18 +23,17 @@ const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
   // Handle login process for each player
   const handleLogin = async (playerKey, setPlayer) => {
     setLoading((prev) => ({ ...prev, [playerKey]: true }));
-    setErrors((prev) => ({ ...prev, [playerKey]: "" }));
+    setErrors(""); // Clear errors on each login attempt
 
     try {
       // Make the API call to log the player in
-      const data = await authService.login(players[playerKey].email, players[playerKey].password);
+      const response = await authService.login(players[playerKey].email, players[playerKey].password);
 
       // Assuming the response contains the username and player ID
       const playerData = {
-        username: data?.username || "Unknown",  // Ensure username is correctly accessed
+        username: response?.username || "Unknown",  // Ensure username is correctly accessed
         email: players[playerKey].email,
-        id: data?.id || null, // Adding player ID
-        token: localStorage.getItem("token"),  // Fetching token from localStorage
+        id: response?.id || null, // Adding player ID
       };
 
       // Set the player data using the passed in setPlayer function
@@ -46,18 +45,13 @@ const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
         [playerKey]: { email: "", password: "" },
       }));
 
-      // Optionally handle after both players log in and proceed to game
+      // After both players log in, redirect or proceed to game
       if (playerKey === "player2") {
-        // Redirect to game page or other actions after both players log in
-        window.location.href = "/game"; // Example redirection
+        window.location.href = "/game"; // Redirect to game page after both players log in
       }
-
     } catch (error) {
       // Handle errors and display the error message
-      setErrors((prev) => ({
-        ...prev,
-        [playerKey]: error?.response?.data?.message || "Login failed! Check credentials.",
-      }));
+      setErrors(error?.response?.data?.message || "Login failed! Check credentials.");
     } finally {
       setLoading((prev) => ({ ...prev, [playerKey]: false }));
     }
@@ -75,9 +69,9 @@ const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
           >
             <h3 className="text-xl font-semibold text-center mb-4">{`Player ${index + 1}`}</h3>
 
-            {/* Error message for the respective player */}
-            {errors[playerKey] && (
-              <p className="text-red-500 text-sm text-center mb-2">{errors[playerKey]}</p>
+            {/* Error message for the general error */}
+            {errors && (
+              <p className="text-red-500 text-sm text-center mb-2">{errors}</p>
             )}
 
             <input
@@ -109,7 +103,7 @@ const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
               {loading[playerKey] ? "Logging in..." : `Login as Player ${index + 1}`}
             </button>
           </div>
-        ))}z
+        ))}
       </div>
 
       {/* Display character images */}
