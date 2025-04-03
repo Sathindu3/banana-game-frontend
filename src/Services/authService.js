@@ -7,7 +7,7 @@ const login = async (email, password) => {
   try {
     const response = await axios.post(`${API_URL}/login`, {
       email,
-      password
+      password,
     }, { withCredentials: true }); // Include credentials (cookies) in the request
 
     console.log("Login API Response:", response.data);

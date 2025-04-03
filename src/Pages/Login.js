@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import authService from "../Services/authService" // Ensure you have the auth service to handle login
+import { useUser } from "../UserContext"; // Import UserContext to use login function
+import authService from "../Services/authService"; // Ensure you have the auth service to handle login
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useUser(); // Get the login function from context
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState("");
@@ -14,13 +16,13 @@ const Login = () => {
     setErrors(""); // Clear errors on each login attempt
 
     try {
-      const data = await authService.login(email, password); // Assuming login method exists
+      const data = await authService.login(email, password); // Call the authService to login
 
-      // Store the token in localStorage
-      localStorage.setItem("token", data.token);
+      // Store the username in the UserContext
+      login(data.username);
 
-      // Navigate to the game page after successful login
-      navigate("/game"); // Redirect to the game page
+      // Navigate to the home page after successful login
+      navigate("/"); // Redirect to the home page
     } catch (error) {
       setErrors(error?.response?.data?.message || "Login failed! Check credentials.");
     } finally {

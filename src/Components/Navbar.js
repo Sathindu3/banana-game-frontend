@@ -1,16 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import authService from "../Services/authService";
+import { useUser } from "../UserContext"; // Import the custom hook to use the UserContext
 
-const Navbar = ({ user }) => {
-  const handleLogout = async () => {
-    try {
-      await authService.logout(); // Log the user out
-      window.location.href = "/login"; // Redirect to login or home page after logout
-    } catch (error) {
-      console.error("Error logging out", error);
-    }
-  };
+const Navbar = () => {
+  const { user_Name } = useUser(); // Get user_Name from UserContext
 
   return (
     <nav>
@@ -19,22 +12,21 @@ const Navbar = ({ user }) => {
           <Link to="/">Home</Link>
         </li>
         <li>
-          <Link to="/game">Multiplayer Game</Link>
+          <Link to="/singleplayer">Single Player</Link>
         </li>
         <li>
-          <Link to="/singleplayer">Single Player Game</Link>
+          <Link to="/game">Multiplayer</Link>
         </li>
-        {/* Show login button if no user is logged in */}
-        {!user ? (
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-        ) : (
-          // Show logout button if the user is logged in
-          <li>
-            <button onClick={handleLogout}>Logout</button>
-          </li>
-        )}
+        <li>
+          <Link to="/help">Help</Link>
+        </li>
+        <li>
+          {user_Name ? (
+            <span>Hi, {user_Name}!</span> // Display username if logged in
+          ) : (
+            <Link to="/login">Login</Link> // Link to login page if not logged in
+          )}
+        </li>
       </ul>
     </nav>
   );

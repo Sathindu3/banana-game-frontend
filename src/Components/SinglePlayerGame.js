@@ -26,6 +26,7 @@ const SinglePlayerGame = () => {
     { x: 750, y: 150, width: 150, height: 10 },
     { x: 900, y: 550, width: 150, height: 10 },
   ]);
+  
   const [chests, setChests] = useState([]);
   const [bananas, setBananas] = useState([]);
   const [quiz, setQuiz] = useState(null);
