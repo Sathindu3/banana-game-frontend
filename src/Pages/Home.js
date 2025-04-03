@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import "../Resources/Home.css";
 import myGif from "../Resources/monkey_animation2.gif";
 import banana from "../Resources/banana.png";
+import authService from "../Services/authService";
 // import backgroundMusic from "../Resources/background.mp3";
 
 // // Music
@@ -22,6 +23,17 @@ import banana from "../Resources/banana.png";
 //     document.removeEventListener("click", playMusic);
 //   };
 // }, []);
+const handleLogout = async () => {
+  try {
+    // Log the user out
+    await authService.logout();
+    
+    // Optionally, you can redirect them to the home page after logging out
+    window.location.href = "/"; // Or use useHistory in React Router v5/v6
+  } catch (error) {
+    console.error("Error logging out", error);
+  }
+};
 
 
 const Home = () => {
@@ -40,15 +52,18 @@ const Home = () => {
         </Link>
 
         {/* Other Pages */}
-        <Link to="/login">
+        <Link to="/register">
           <button style={buttonStyle}>👤 Login</button>
         </Link>
         <Link to="/help">
           <button style={buttonStyle}>❓ Help</button>
         </Link>
-        <Link to="/highscore">
+        {/* <Link to="/highscore">
           <button style={buttonStyle}>🏆 Highest Score</button>
-        </Link>
+        </Link> */}
+        <li>
+          <button onClick={handleLogout}>Logout</button>
+        </li>
       </div>
 
       <img style={{ width: "300px", position: "absolute", right: "0px" }} src={myGif} alt="GIF Animation" />

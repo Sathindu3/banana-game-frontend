@@ -1,34 +1,36 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from "./Pages/Home";
-import Game from "./Components/Game"; // Multiplayer game
-import SinglePlayerGame from "./Components/SinglePlayerGame"; // Single Player game
+import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./Components/Navbar";
+import Game from "./Components/Game";
+import SinglePlayerGame from "./Components/SinglePlayerGame";
 import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import Help from "./Pages/Help";
-// import HighScore from "./HighScore";
+import Home from "./Pages/Home";
+import authService from "../src/Services/authService"; // Import the auth service
 
 function App() {
+  const [user, setUser] = useState(null); // Track logged-in user
+
+  // Check login status when the app mounts
+  useEffect(() => {
+    const checkLoginStatus = async () => {
+      const currentUser = await authService.getCurrentUser();
+      setUser(currentUser); // Set the user if logged in, or null if not
+    };
+    checkLoginStatus(); // Call this on initial load
+  }, []);
+
   return (
     <Router>
+      <Navbar user={user} /> {/* Pass user data to Navbar for conditional rendering */}
       <Routes>
-        {/* Home Page */}
         <Route path="/" element={<Home />} />
-        
-        {/* Game Mode Selection */}
-        <Route path="/game" element={<Game />} />  {/* Multiplayer Game */}
-        
-        {/* New Route for SinglePlayer Game */}
-        <Route path="/singleplayer" element={<SinglePlayerGame />} />  {/* SinglePlayer Game */}
-        
-        {/* Authentication Routes */}
+        <Route path="/game" element={<Game />} />
+        <Route path="/singleplayer" element={<SinglePlayerGame />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        
-        {/* Help Page */}
         <Route path="/help" element={<Help />} />
-        
-        {/* Uncomment if you have a HighScore page */}
-        {/* <Route path="/highscore" element={<HighScore />} /> */}
       </Routes>
     </Router>
   );

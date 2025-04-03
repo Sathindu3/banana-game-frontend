@@ -1,4 +1,5 @@
 import React from "react";
+import keys from "../Resources/keys.jpg";
 
 const Help = () => {
   return (
@@ -18,15 +19,10 @@ const Help = () => {
       <section>
         <h3>How to Play the Two-Player Game?</h3>
         <p>Both players must log in using their accounts. Once both are authenticated, they will be taken to the game screen where Player 1 and Player 2 can play together.</p>
-      </section>
-
+        <img src={keys} style={{width:"500px"}}></img>
+      </section> 
       <section>
-        <h3>Forgot Password?</h3>
-        <p>If you forgot your password, please contact support or check if the application has a password reset feature.</p>
-      </section>
-
-      <section>
-        <h3>Need More Help?</h3>
+        <h3>Rules</h3>
         <p>If you need further assistance, contact our support team at <strong>support@example.com</strong>.</p>
       </section>
     </div>
