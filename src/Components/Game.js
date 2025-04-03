@@ -13,15 +13,41 @@ const Game = () => {
     score: 0,
     isJumping: false
   });
-  const [player2, setPlayer2] = useState({ x: 300, y: 500, velocityY: 0, score: 0, isJumping: false });
+  const [player2, setPlayer2] = useState({ x: 200, y: 500, velocityY: 0, score: 0, isJumping: false });
   const [chests, setChests] = useState([]);
   const [bananas, setBananas] = useState([]);
   const [quiz, setQuiz] = useState(null);
   const [showQuiz, setShowQuiz] = useState(false);
-  const [timer, setTimer] = useState(60);
+  const [timer, setTimer] = useState(30);
   const [answer, setAnswer] = useState("");  // To store the player's answer
   const [feedback, setFeedback] = useState("");  // Feedback message: "Correct!" or "Try again!"
+  const [winner, setWinner] = useState(null);
   const gravity = 1;
+
+
+    
+  useEffect(() => {
+    if (timer > 0) {
+      const countdown = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(countdown);
+    } else if (winner === null) {  // Ensure winner is determined only once
+      determineWinner();
+    }
+  }, [timer]);
+  
+
+  const determineWinner = () => {
+    if (player1.score > player2.score) {
+      setWinner(`${player1.name} Wins! 🎉`);
+    } else if (player2.score > player1.score) {
+      setWinner(`${player2.name} Wins! 🎉`);
+    } else {
+      setWinner("It's a Tie! 🎊");
+    }
+  };
+
 
   const ground = [
     { x: 0, y: 700, width: 150, height: 10 },
@@ -40,11 +66,11 @@ const Game = () => {
     { x: 750, y: 150, width: 150, height: 10 },
     { x: 900, y: 550, width: 150, height: 10 },
 
-    { x: 200, y: 80, width: 150, height: 10 },
-    { x: 300, y: -20, width: 150, height: 10 },
-    { x: 500, y: -100, width: 150, height: 10 },
-    { x: 250, y: -150, width: 150, height: 10 },
-    { x: 400, y: -200, width: 150, height: 10 },
+    { x: 200, y: 120, width: 150, height: 10 },
+    { x: 300, y: 0, width: 150, height: 10 },
+    { x: 500, y: -50, width: 150, height: 10 },
+    { x: 250, y: 50, width: 150, height: 10 },
+    { x: 400, y: 100, width: 150, height: 10 },
   ];
 
   useEffect(() => {
@@ -176,7 +202,7 @@ const Game = () => {
   const verifyAnswer = () => {
     if (answer === quiz.solution.toString()) {
       setFeedback("Correct!");
-      setPlayer1((prev) => ({ ...prev, score: prev.score + 10 })); // Add score if correct
+      setPlayer1((prev) => ({ ...prev, score: prev.score + 50 })); // Add score if correct
       setShowQuiz(false); // Hide quiz after answering correctly
     } else {
       setFeedback("Try again!");
@@ -240,6 +266,7 @@ useEffect(() => {
 
 
   return (
+    
     <div className="game-container">
       <div className="game-info">
         <p>⏳ Time Left: {timer}s</p>
@@ -262,10 +289,18 @@ useEffect(() => {
   .map((banana, index) => (
     <img key={index} src="/assets/banana.png" className="banana" style={{ left: banana.x, top: banana.y }} alt="Banana" />
 ))}
+{winner && (
+  <div className="winner-message">
+    <h2>{winner}</h2>
+    <button onClick={() => window.location.reload()}>Restart Game</button>
+  </div>
+)}
+
       </div>
       {showQuiz && quiz && (
         <div className="quiz-container">
-          <img src={quiz.question} alt="Quiz" />
+          <h2>Solve puzzle. Earn 50 points</h2>
+          <img style={{width:"400px"}} src={quiz.question} alt="Quiz" />
           <input
             type="number"
             value={answer}
