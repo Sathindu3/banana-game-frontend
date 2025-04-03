@@ -1,0 +1,99 @@
+/* Apply background styling */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #4b6cb7, #182848);
+    color: white;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Style the main title */
+  .login-container h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  /* Player login card */
+  .player-login {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    margin: 15px;
+    width: 300px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    text-align: center;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  /* Hover effect */
+  .player-login:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Player heading */
+  .player-login h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #fff;
+  }
+  
+  /* Input fields */
+  .player-login input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.9);
+  }
+  
+  /* Focus effect */
+  .player-login input:focus {
+    background: white;
+    box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.8);
+  }
+  
+  /* Login button */
+  .player-login button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+    background: #28a745;
+    color: white;
+    transition: background 0.3s ease-in-out;
+  }
+  
+  /* Disabled button */
+  .player-login button:disabled {
+    background: gray;
+    cursor: not-allowed;
+  }
+  
+  /* Button hover effect */
+  .player-login button:hover {
+    background: #218838;
+  }
+  
+  /* Error messages */
+  .error {
+    color: #ff4d4d;
+    font-size: 14px;
+    background: rgba(255, 77, 77, 0.2);
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  

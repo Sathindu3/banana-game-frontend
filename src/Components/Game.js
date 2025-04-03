@@ -119,7 +119,7 @@ const Game = () => {
 
     checkChestCollision(newPlayer);
     return newPlayer;
-    
+
   };
 
   const checkChestCollision = (player) => {
@@ -172,14 +172,14 @@ const Game = () => {
   useEffect(() => {
     const bgMusic = new Audio(backgroundMusic);
     bgMusic.loop = true;
-  
+
     const playMusic = () => {
       bgMusic.play().catch((error) => console.error("Audio play failed:", error));
       document.removeEventListener("click", playMusic);
     };
-  
+
     document.addEventListener("click", playMusic);
-    
+
     return () => {
       bgMusic.pause();
       document.removeEventListener("click", playMusic);
@@ -187,24 +187,24 @@ const Game = () => {
   }, []);
 
 
-// collect banana
-useEffect(() => {
-  const checkBananaCollection = (player, setPlayer) => {
-    setBananas((prevBananas) => {
-      return prevBananas.map((banana) => {
-        if (!banana.collected && Math.abs(player.x - banana.x) < 30 && Math.abs(player.y - banana.y) < 30) {
-          new Audio(collectSound).play();
-          setPlayer((prev) => ({ ...prev, score: prev.score + 10 })); // Increase score
-          return { ...banana, collected: true }; // Mark banana as collected
-        }
-        return banana;
+  // collect banana
+  useEffect(() => {
+    const checkBananaCollection = (player, setPlayer) => {
+      setBananas((prevBananas) => {
+        return prevBananas.map((banana) => {
+          if (!banana.collected && Math.abs(player.x - banana.x) < 30 && Math.abs(player.y - banana.y) < 30) {
+            new Audio(collectSound).play();
+            setPlayer((prev) => ({ ...prev, score: prev.score + 10 })); // Increase score
+            return { ...banana, collected: true }; // Mark banana as collected
+          }
+          return banana;
+        });
       });
-    });
-  };
+    };
 
-  checkBananaCollection(player1, setPlayer1);
-  checkBananaCollection(player2, setPlayer2);
-}, [player1, player2, bananas]);
+    checkBananaCollection(player1, setPlayer1);
+    checkBananaCollection(player2, setPlayer2);
+  }, [player1, player2, bananas]);
 
 
   return (
@@ -222,11 +222,12 @@ useEffect(() => {
         {chests.map((chest, index) => (
           <img key={index} src="/assets/chest.png" className="chest" style={{ left: chest.x, top: chest.y }} alt="Chest" />
         ))}
-       {bananas
-  .filter((banana) => !banana.collected) // Only render uncollected bananas
-  .map((banana, index) => (
-    <img key={index} src="/assets/banana.png" className="banana" style={{ left: banana.x, top: banana.y }} alt="Banana" />
-))}
+        {bananas
+          .filter((banana) => !banana.collected) // Only render uncollected bananas
+          .map((banana, index) => (
+            <img key={index} src="/assets/banana.png" className="banana" style={{ left: banana.x, top: banana.y }} alt="Banana" />
+          ))}
+      <div className="ground"></div>
       </div>
       {showQuiz && quiz && (
         <div className="quiz-container">

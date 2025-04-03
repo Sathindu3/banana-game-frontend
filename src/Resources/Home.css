@@ -1,6 +1,86 @@
-.home-div{
-    background-image: url("../../public/Assets/homeBG.png");
+@keyframes rotate-left {
+    0% {
+        transform: rotate(0deg);
+
+    }
+
+    25% {
+        transform: rotate(90deg);
+    }
+
+    50% {
+
+        transform: rotate(180deg);
+
+    }
+
+    75% {
+
+        transform: rotate(270deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+
+    }
+}
+
+@keyframes rotate-right {
+    0% {
+        transform: rotate(0deg);
+
+    }
+
+    25% {
+        transform: rotate(-270deg);
+    }
+
+    50% {
+
+        transform: rotate(-180deg);
+
+    }
+
+    75% {
+
+        transform: rotate(-90deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+
+    }
+}
+.home-div {
+    background-image: url("../../public/Assets/home_bg.jpg");
     background-repeat: no-repeat;
-    background-size: cover;
+    background-size: contain;
     height: 100vh;
+}
+
+.home-div h1 {
+    margin-bottom: 150px;
+}
+
+.home-div h1:hover {
+    color: rgb(255, 204, 0);
+    font-size: 80px !important;
+    transition: 800ms;
+}
+
+.home-buttons button {
+    border: 3px solid transparent !important;
+}
+
+.home-buttons button:hover {
+    background-color: rgb(255, 254, 254) !important;
+    color: rgb(255, 204, 0) !important;
+    border: 3px solid black !important;
+}
+
+.banana_home {
+    animation: rotate-left infinite 10s linear;
+}
+.banana_home_1 {
+    animation: rotate-right infinite 10s linear;
 }
