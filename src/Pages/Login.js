@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import authService from "../Services/authService"; 
 import "../Resources/Login.css";
 
-
 const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
   const [players, setPlayers] = useState({
     player1: { email: "", password: "" },
@@ -12,7 +11,7 @@ const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
   const [errors, setErrors] = useState({ player1: "", player2: "" });
   const [loading, setLoading] = useState({ player1: false, player2: false });
 
-  // Handle input changes
+  // Handle input changes for both players
   const handleChange = (event, player) => {
     const { name, value } = event.target;
     setPlayers((prev) => ({
@@ -21,19 +20,25 @@ const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
     }));
   };
 
-  // Handle login process
+  // Handle login process for each player
   const handleLogin = async (playerKey, setPlayer) => {
     setLoading((prev) => ({ ...prev, [playerKey]: true }));
     setErrors((prev) => ({ ...prev, [playerKey]: "" }));
 
     try {
+      // Make the API call to log the player in
       const data = await authService.login(players[playerKey].email, players[playerKey].password);
+      
+      // Set the player data (this could be the user object or token)
       setPlayer(data.user);
+
+      // Clear the input fields after successful login
       setPlayers((prev) => ({
         ...prev,
         [playerKey]: { email: "", password: "" },
       }));
     } catch (error) {
+      // Handle errors and display the error message
       setErrors((prev) => ({
         ...prev,
         [playerKey]: error.response?.data?.message || "Login failed! Check credentials.",
@@ -55,6 +60,7 @@ const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
           >
             <h3 className="text-xl font-semibold text-center mb-4">{`Player ${index + 1}`}</h3>
 
+            {/* Error message for the respective player */}
             {errors[playerKey] && (
               <p className="text-red-500 text-sm text-center mb-2">{errors[playerKey]}</p>
             )}
@@ -88,16 +94,15 @@ const TwoPlayerLogin = ({ setPlayer1, setPlayer2 }) => {
             >
               {loading[playerKey] ? "Logging in..." : `Login as Player ${index + 1}`}
             </button>
-  
           </div>
-          
         ))}
       </div>
+
+      {/* Display character images */}
       <div className="character">
-      <img src={"/assets/monkey1.png"} className="player-one"  alt="Player 1" />
-      <img src={"/assets/monkey2.png"} className="player-two"  alt="Player 1" />
+        <img src={"/assets/monkey1.png"} className="player-one" alt="Player 1" />
+        <img src={"/assets/monkey2.png"} className="player-two" alt="Player 2" />
       </div>
-    
     </div>
   );
 };

@@ -4,24 +4,19 @@ const API_URL = "http://localhost:5062/api/auth"; // Ensure backend URL is corre
 
 const login = async (email, password) => {
   try {
-    const response = await axios.post("http://localhost:5062/api/auth/login", 
-      { email, password },  // <-- Ensure email & password are inside an object
-      {
-        headers: { "Content-Type": "application/json" }
-      }
-    );
-    return response.data;
+    const response = await axios.post(`${API_URL}/login`, {
+      email,   // Send email and password in the request body
+      password
+    });
+    return response.data;  // Assuming response has a user object
   } catch (error) {
-    console.error("Login API Error:", error.response?.data);
-    throw error.response?.data?.message || "Login failed!";
+    throw error.response ? error.response.data : "Login failed";
   }
 };
 
-
-
-const register = async (email, password) => {
+const register = async (playerData) => {
   try {
-    const response = await axios.post(`${API_URL}/register`, { email, password });
+    const response = await axios.post(`${API_URL}/register`, playerData);  // Send playerData including email, password, and username
     return response.data;
   } catch (error) {
     throw error.response ? error.response.data : "Registration failed";
