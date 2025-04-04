@@ -164,7 +164,7 @@ const SinglePlayerGame = () => {
   const verifyAnswer = () => {
     if (answer === quiz.solution.toString()) {
       setFeedback("Correct!");
-      setPlayer((prev) => ({ ...prev, score: prev.score + 10 }));
+      setPlayer((prev) => ({ ...prev, score: prev.score + 50 }));
       setShowQuiz(false);
     } else {
       setFeedback("Try again!");

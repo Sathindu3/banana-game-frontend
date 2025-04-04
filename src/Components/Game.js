@@ -26,7 +26,7 @@ const Game = () => {
   const [bananas, setBananas] = useState([]);
   const [quiz, setQuiz] = useState(null);
   const [showQuiz, setShowQuiz] = useState(false);
-  const [timer, setTimer] = useState(60); // Timer for the game
+  const [timer, setTimer] = useState(10); // Timer for the game
   const [gameOver, setGameOver] = useState(false); // Track game over status
   const [answer, setAnswer] = useState(""); // To store the player's answer
   const [feedback, setFeedback] = useState(""); // Feedback message: "Correct!" or "Try again!"
@@ -63,7 +63,8 @@ const Game = () => {
         setTimer((prevTime) => {
           if (prevTime <= 1) {
             clearInterval(timerInterval); // Stop timer when it reaches 0
-            setGameOver(true); // End the game
+            setGameOver(true); // Set the game as over when timer reaches 0
+            declareWinner(); // Declare the winner
             return 0;
           }
           return prevTime - 1; // Decrease timer by 1 second
@@ -78,7 +79,7 @@ const Game = () => {
   }, [gameStarted]);
 
   const placeChests = () => {
-    setChests([{ x: 200, y: 350 }, { x: 300, y: 250 }, { x: 400, y: 150 }]);
+    setChests([{ x: 800, y: 320 }, { x: 580, y: 400 }, { x: 400, y: 120 }]);
   };
 
   const placeBananas = () => {
@@ -86,10 +87,12 @@ const Game = () => {
   };
 
   const applyPhysics = (player, setPlayer) => {
+    if (gameOver) return player; // Don't apply physics if game is over
+  
     let newY = player.y + player.velocityY;
     let newVelocityY = player.velocityY + gravity;
     let isOnPlatform = false;
-
+  
     // Check for platform collisions
     platforms.forEach((platform) => {
       if (
@@ -103,18 +106,20 @@ const Game = () => {
         isOnPlatform = true;
       }
     });
-
+  
     // Check if the player is on the ground level
     if (newY + 40 > groundLevel) {
       newY = groundLevel - 40; // Stop player at ground level
       newVelocityY = 0; // Reset vertical velocity
       isOnPlatform = true;
     }
-
+  
     return { ...player, y: newY, velocityY: newVelocityY, isJumping: !isOnPlatform };
   };
 
   const handleKeyPress = (event) => {
+    if (gameOver) return; // Prevent actions if the game is over
+  
     if (["a", "d", "w"].includes(event.key)) {
       setPlayer1((prev) => movePlayer(prev, event.key, setPlayer1));
       new Audio(jumpSound).play();
@@ -151,6 +156,8 @@ const Game = () => {
   };
 
   const checkChestCollision = (player) => {
+    if (gameOver) return; // Prevent chest collection if the game is over
+  
     setChests((prevChests) =>
       prevChests.filter((chest) => {
         const isColliding = Math.abs(player.x - chest.x) < 30 && Math.abs(player.y - chest.y) < 30;
@@ -181,7 +188,7 @@ const Game = () => {
   const verifyAnswer = () => {
     if (answer === quiz.solution.toString()) {
       setFeedback("Correct!");
-      setPlayer1((prev) => ({ ...prev, score: prev.score + 10 })); // Add score if correct
+      setPlayer1((prev) => ({ ...prev, score: prev.score + 50 })); // Add score if correct
       setShowQuiz(false); // Hide quiz after answering correctly
     } else {
       setFeedback("Try again!");
@@ -191,6 +198,24 @@ const Game = () => {
 
   const startGame = () => {
     setGameStarted(true);
+    setGameOver(false); // Reset game over status when starting a new game
+    setPlayer1({ ...player1, score: 0 });
+    setPlayer2({ ...player2, score: 0 });
+    setTimer(10); // Reset timer to 10 seconds
+  };
+
+  const declareWinner = () => {
+    const winner =
+      player1.score > player2.score
+        ? `${player1.name} Wins!`
+        : player1.score < player2.score
+        ? `${player2.name} Wins!`
+        : "It's a Tie!";
+    alert(`Game Over! ${winner}`);
+  };
+
+  const restartGame = () => {
+    startGame(); // Reset the game to its initial state
   };
 
   useEffect(() => {
@@ -245,13 +270,13 @@ const Game = () => {
           <input
             type="text"
             value={player1.name}
-            onChange={(e) => setPlayer1((prev) => ({ ...prev, name: e.target.value }))}
+            onChange={(e) => setPlayer1((prev) => ({ ...prev, name: e.target.value }))} 
           />
           <h2>Enter Player 2 Name:</h2>
           <input
             type="text"
             value={player2.name}
-            onChange={(e) => setPlayer2((prev) => ({ ...prev, name: e.target.value }))}
+            onChange={(e) => setPlayer2((prev) => ({ ...prev, name: e.target.value }))} 
           />
           <button onClick={startGame}>Start Game</button>
         </div>
@@ -294,6 +319,10 @@ const Game = () => {
             <div className="game-over">
               <p>Game Over!</p>
               <p>🏆 {player1.score > player2.score ? player1.name : player2.name} Wins!</p>
+              <p>🏅 Final Scores:</p>
+              <p>{player1.name}: {player1.score} Points</p>
+              <p>{player2.name}: {player2.score} Points</p>
+              <button onClick={restartGame}>Restart Game</button>
             </div>
           )}
         </>

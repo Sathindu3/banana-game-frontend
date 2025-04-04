@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../UserContext"; // Import UserContext to use login function
 import authService from "../Services/authService"; // Ensure you have the auth service to handle login
+import "../Resources/Login.css";
 
 const Login = () => {
   const navigate = useNavigate();

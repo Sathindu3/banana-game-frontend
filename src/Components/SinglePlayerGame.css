@@ -1,101 +1,128 @@
 /* SinglePlayerGame.css */
 
 .game-container {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    background-color: #87CEEB; /* Light blue background for the sky */
-    overflow: hidden;
-  }
-  
-  .game-info {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    font-size: 24px;
-    color: white;
-    font-family: Arial, sans-serif;
-  }
-  
-  .game-area {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    /* background-color: #228B22; Grass background for the ground */
-  }
-  
-  .platform {
-    position: absolute;
-    /* background-color: #8B4513; Brown color for platforms */
-    border-radius: 5px;
-  }
-  
-  .player {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    /* background-color: #FF6347; Color for the player */
-    border-radius: 50%;
-  }
-  
-  .chest {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    /* background-color: #FFD700; Gold color for chests */
-    border-radius: 5px;
-  }
-  
-  .banana {
-    position: absolute;
-    width: 30px;
-    height: 30px;
-    /* background-color: yellow; */
-    border-radius: 50%;
-  }
-  
-  .quiz-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.7);
-    padding: 20px;
-    border-radius: 10px;
-    color: white;
-    text-align: center;
-  }
-  
-  .quiz-container input {
-    padding: 10px;
-    font-size: 18px;
-    width: 100px;
-    margin: 10px 0;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  
-  .quiz-container button {
-    padding: 10px 20px;
-    font-size: 18px;
-    cursor: pointer;
-    border: none;
-    background-color: #4CAF50; /* Green button */
-    color: white;
-    border-radius: 5px;
-    margin-top: 10px;
-  }
-  
-  .quiz-container p {
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: 10px;
-  }
-  
-  .error {
-    color: red;
-    font-size: 16px;
-    margin-top: 10px;
-  }
-  
-  
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-color: #87CEEB;
+  /* Light blue background for the sky */
+  overflow: hidden;
+}
+
+.game-container .username-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+}
+.game-container .username-input input{
+  padding: 10px 30px;
+  font-size: 20px;
+}
+.game-container .username-input button{
+  margin: 20px 0px;
+  background-color: rgb(14, 168, 14);
+  font-size: 20px;
+  border: none;
+  padding: 15px 50px;
+  border-radius: 30px;
+  transition: 600ms;
+}
+.game-container .username-input button:hover{
+  background-color: yellow;
+}
+.game-info {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  font-size: 24px;
+  color: white;
+  font-family: Arial, sans-serif;
+}
+
+.game-area {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  /* background-color: #228B22; Grass background for the ground */
+}
+
+.platform {
+  position: absolute;
+  /* background-color: #8B4513; Brown color for platforms */
+  border-radius: 5px;
+}
+
+.player {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  /* background-color: #FF6347; Color for the player */
+  border-radius: 50%;
+}
+
+.chest {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  /* background-color: #FFD700; Gold color for chests */
+  border-radius: 5px;
+}
+
+.banana {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  /* background-color: yellow; */
+  border-radius: 50%;
+}
+
+.quiz-container {
+  position: absolute;
+  top: 30%;
+  left: 80%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+}
+
+.quiz-container img {
+  width: 500px;
+}
+
+.quiz-container input {
+  padding: 10px;
+  font-size: 18px;
+  width: 100px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.quiz-container button {
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
+  border: none;
+  background-color: #4CAF50;
+  /* Green button */
+  color: white;
+  border-radius: 5px;
+  margin-top: 10px;
+}
+
+.quiz-container p {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.error {
+  color: red;
+  font-size: 16px;
+  margin-top: 10px;
+}

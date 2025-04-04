@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import authService from "../Services/authService"; // Assuming you have this service for API calls
+import "../Resources/Register.css";
 
 const Register = ({ setPlayer1 }) => {
   const [email, setEmail] = useState("");

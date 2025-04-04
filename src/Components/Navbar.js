@@ -1,13 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useUser } from "../UserContext"; // Import the custom hook to use the UserContext
+import "./Navbar.css";
 
 const Navbar = () => {
   const { user_Name } = useUser(); // Get user_Name from UserContext
 
   return (
     <nav>
-      <ul>
+      <ul className="navbar-main">
         <li>
           <Link to="/">Home</Link>
         </li>
