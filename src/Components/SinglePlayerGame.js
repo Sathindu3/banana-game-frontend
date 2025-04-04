@@ -26,16 +26,16 @@ const SinglePlayerGame = () => {
     { x: 750, y: 150, width: 150, height: 10 },
     { x: 900, y: 550, width: 150, height: 10 },
   ]);
-  
+
   const [chests, setChests] = useState([]);
   const [bananas, setBananas] = useState([]);
   const [quiz, setQuiz] = useState(null);
   const [showQuiz, setShowQuiz] = useState(false);
   const [answer, setAnswer] = useState("");
   const [feedback, setFeedback] = useState("");
-  const [timer, setTimer] = useState(60); // Countdown timer in seconds
+  const [timer, setTimer] = useState(10);
   const gravity = 1;
-  const [gameStarted, setGameStarted] = useState(false); // New state to track if game started
+  const [gameStarted, setGameStarted] = useState(false); 
 
   useEffect(() => {
     if (gameStarted) {
@@ -45,7 +45,9 @@ const SinglePlayerGame = () => {
         setTimer((prev) => {
           if (prev === 1) {
             clearInterval(interval);
-            declareWinner(); // Declare the winner when the timer hits 0
+            // Show alert when the game is over
+            alert(`${username} Game over! Click ok to play again!`);
+            setGameStarted(false); 
           }
           return prev - 1;
         });
@@ -185,6 +187,7 @@ const SinglePlayerGame = () => {
         return prevBananas.map((banana) => {
           if (!banana.collected && Math.abs(player.x - banana.x) < 30 && Math.abs(player.y - banana.y) < 30) {
             new Audio(collectSound).play();
+            
             setPlayer((prev) => ({ ...prev, score: prev.score + 10 }));
             return { ...banana, collected: true };
           }
@@ -195,12 +198,6 @@ const SinglePlayerGame = () => {
 
     checkBananaCollection(player);
   }, [player]);
-
-  // Declare winner at the end of the game
-  const declareWinner = () => {
-    alert(`${username} wins! Final score: ${player.score}`);
-    // You can customize this logic, e.g., show a more detailed modal, or reset the game
-  };
 
   // Handle start game after entering username
   const startGame = () => {

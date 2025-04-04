@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { useUser } from "../UserContext"; // Import the custom hook to use the UserContext
+import { useUser } from "../UserContext"; 
 import "./Navbar.css";
 
 const Navbar = () => {
-  const { user_Name } = useUser(); // Get user_Name from UserContext
+  const { user_Name } = useUser(); 
 
   return (
     <nav>
@@ -23,9 +23,9 @@ const Navbar = () => {
         </li>
         <li>
           {user_Name ? (
-            <span>Hi, {user_Name}!</span> // Display username if logged in
+            <span>Hi, {user_Name}!</span>
           ) : (
-            <Link to="/login">Login</Link> // Link to login page if not logged in
+            <Link to="/login">Login</Link> 
           )}
         </li>
       </ul>

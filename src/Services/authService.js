@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5062/api/auth"; // Ensure the backend URL is correct
+const API_URL = "http://localhost:5062/api/auth"; 
 
 // Login function - handles session-based authentication
 const login = async (email, password) => {

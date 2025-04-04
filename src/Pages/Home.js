@@ -3,15 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import "../Resources/Home.css";
 import myGif from "../Resources/monkey_animation2.gif";
 import banana from "../Resources/banana.png";
-import { useUser } from "../UserContext"; // Import the custom hook to use the UserContext
+import { useUser } from "../UserContext";
 import authService from "../Services/authService";
 
-// Function for logging out
+
 const handleLogout = async (logout) => {
   try {
-    await authService.logout(); // Log out the user
-    logout(); // Call the logout function from context
-    window.location.href = "/"; // Optionally redirect to home page after logout
+    await authService.logout(); 
+    logout(); 
+    window.location.href = "/"; 
   } catch (error) {
     console.error("Error logging out", error);
   }
@@ -19,20 +19,20 @@ const handleLogout = async (logout) => {
 
 const Home = () => {
   const { user_Name, logout, loading } = useUser(); // Access the logged-in username and loading state from context
-  const navigate = useNavigate(); // Use the useNavigate hook instead of useHistory
+  const navigate = useNavigate();
 
-  // If loading, show a loading message
+
   if (loading) {
-    return <p>Loading...</p>; // Show "Loading..." until the user data is loaded
+    return <p>Loading...</p>; 
   }
 
-  // Handle game mode navigation only if logged in
+
   const handleGameModeClick = (mode) => {
     if (!user_Name) {
-      alert("You must be logged in to play Single Player or Multiplayer!"); // Show alert if not logged in
-      navigate("/register"); // Redirect to login page if not logged in
+      alert("You must be logged in to play Single Player or Multiplayer!"); 
+      navigate("/register");
     } else {
-      // Proceed to the selected game mode if logged in
+     
       if (mode === "singleplayer") {
         navigate("/singleplayer");
       } else if (mode === "multiplayer") {
@@ -48,9 +48,9 @@ const Home = () => {
 
       {/* Display logged-in username */}
       {user_Name ? (
-        <p style={{ fontSize: "24px", fontWeight: "600" }}>Hi, {user_Name}!</p> // Show username if logged in
+        <p style={{ fontSize: "24px", fontWeight: "600" }}>Hi, {user_Name}!</p> 
       ) : (
-        <p style={{ fontSize: "24px", fontWeight: "600" }}>Please log in!</p> // Show prompt to log in if not logged in
+        <p style={{ fontSize: "24px", fontWeight: "600" }}>Please log in!</p> 
       )}
 
       {/* Display "Please log in to play" message if not logged in */}

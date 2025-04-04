@@ -7,13 +7,13 @@ import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import Help from "./Pages/Help";
 import Home from "./Pages/Home";
-import { UserProvider } from "./UserContext"; // Import the UserProvider context
+import { UserProvider } from "./UserContext";
 
 function App() {
   return (
     <UserProvider>
       <Router>
-        <Navbar /> {/* Navbar will now use UserContext to get the logged-in user */}
+        <Navbar /> 
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/game" element={<Game />} />

@@ -12,7 +12,7 @@ const Game = () => {
     velocityY: 0,
     score: 0,
     isJumping: false,
-    name: "", // Name for player 1
+    name: "", 
   });
   const [player2, setPlayer2] = useState({
     x: 300,
@@ -20,7 +20,7 @@ const Game = () => {
     velocityY: 0,
     score: 0,
     isJumping: false,
-    name: "", // Name for player 2
+    name: "", 
   });
   const [chests, setChests] = useState([]);
   const [bananas, setBananas] = useState([]);
@@ -64,16 +64,16 @@ const Game = () => {
           if (prevTime <= 1) {
             clearInterval(timerInterval); // Stop timer when it reaches 0
             setGameOver(true); // Set the game as over when timer reaches 0
-            declareWinner(); // Declare the winner
+            declareWinner(); 
             return 0;
           }
-          return prevTime - 1; // Decrease timer by 1 second
+          return prevTime - 1; 
         });
-      }, 1000); // Update every second
+      }, 1000); 
 
       return () => {
         clearInterval(interval);
-        clearInterval(timerInterval); // Cleanup timer when the component unmounts
+        clearInterval(timerInterval); 
       };
     }
   }, [gameStarted]);
@@ -87,7 +87,7 @@ const Game = () => {
   };
 
   const applyPhysics = (player, setPlayer) => {
-    if (gameOver) return player; // Don't apply physics if game is over
+    if (gameOver) return player;
   
     let newY = player.y + player.velocityY;
     let newVelocityY = player.velocityY + gravity;
@@ -101,16 +101,16 @@ const Game = () => {
         player.x + 40 > platform.x &&
         player.x < platform.x + platform.width
       ) {
-        newY = platform.y - 40; // Stop player at the platform
-        newVelocityY = 0; // Reset vertical velocity
+        newY = platform.y - 40; 
+        newVelocityY = 0; 
         isOnPlatform = true;
       }
     });
   
     // Check if the player is on the ground level
     if (newY + 40 > groundLevel) {
-      newY = groundLevel - 40; // Stop player at ground level
-      newVelocityY = 0; // Reset vertical velocity
+      newY = groundLevel - 40; 
+      newVelocityY = 0; 
       isOnPlatform = true;
     }
   
@@ -188,11 +188,11 @@ const Game = () => {
   const verifyAnswer = () => {
     if (answer === quiz.solution.toString()) {
       setFeedback("Correct!");
-      setPlayer1((prev) => ({ ...prev, score: prev.score + 50 })); // Add score if correct
+      setPlayer1((prev) => ({ ...prev, score: prev.score + 50 })); 
       setShowQuiz(false); // Hide quiz after answering correctly
     } else {
       setFeedback("Try again!");
-      setAnswer(""); // Reset the input for a retry
+      setAnswer(""); 
     }
   };
 
@@ -201,7 +201,7 @@ const Game = () => {
     setGameOver(false); // Reset game over status when starting a new game
     setPlayer1({ ...player1, score: 0 });
     setPlayer2({ ...player2, score: 0 });
-    setTimer(10); // Reset timer to 10 seconds
+    setTimer(10);
   };
 
   const declareWinner = () => {
@@ -211,11 +211,18 @@ const Game = () => {
         : player1.score < player2.score
         ? `${player2.name} Wins!`
         : "It's a Tie!";
-    alert(`Game Over! ${winner}`);
+    alert(`Game Over! ${winner}. Click 'OK' to play again.`);
+    restartGame(); // Restart the game when the alert is dismissed
   };
 
   const restartGame = () => {
-    startGame(); // Reset the game to its initial state
+    setGameStarted(false);
+    setGameOver(false); 
+    setPlayer1({ ...player1, score: 0, x: 100, y: 500 });
+    setPlayer2({ ...player2, score: 0, x: 300, y: 500 });
+    setTimer(10);
+    setChests([]);
+    setBananas([]);
   };
 
   useEffect(() => {
@@ -250,7 +257,7 @@ const Game = () => {
         return prevBananas.map((banana) => {
           if (!banana.collected && Math.abs(player.x - banana.x) < 30 && Math.abs(player.y - banana.y) < 30) {
             new Audio(collectSound).play();
-            setPlayer((prev) => ({ ...prev, score: prev.score + 10 })); // Increase score
+            setPlayer((prev) => ({ ...prev, score: prev.score + 10 })); 
             return { ...banana, collected: true }; // Mark banana as collected
           }
           return banana;
@@ -296,7 +303,7 @@ const Game = () => {
               <img key={index} src="/assets/chest.png" className="chest" style={{ left: chest.x, top: chest.y }} alt="Chest" />
             ))}
             {bananas
-              .filter((banana) => !banana.collected) // Only render uncollected bananas
+              .filter((banana) => !banana.collected) 
               .map((banana, index) => (
                 <img key={index} src="/assets/banana.png" className="banana" style={{ left: banana.x, top: banana.y }} alt="Banana" />
               ))}
@@ -313,16 +320,6 @@ const Game = () => {
               />
               <button onClick={verifyAnswer}>Submit</button>
               <p>{feedback}</p>
-            </div>
-          )}
-          {gameOver && (
-            <div className="game-over">
-              <p>Game Over!</p>
-              <p>🏆 {player1.score > player2.score ? player1.name : player2.name} Wins!</p>
-              <p>🏅 Final Scores:</p>
-              <p>{player1.name}: {player1.score} Points</p>
-              <p>{player2.name}: {player2.score} Points</p>
-              <button onClick={restartGame}>Restart Game</button>
             </div>
           )}
         </>
