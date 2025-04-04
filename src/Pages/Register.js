@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import authService from "../Services/authService"; // Assuming you have this service for API calls
+import authService from "../Services/authService";
+import "../Resources/Register.css";
 
 const Register = ({ setPlayer1 }) => {
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");  // New field for Username
+  const [username, setUsername] = useState(""); 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -22,10 +23,10 @@ const Register = ({ setPlayer1 }) => {
     };
 
     try {
-      const data = await authService.register(playerData);  // Adjusted to send player data
+      const data = await authService.register(playerData); 
       setSuccessMessage("Registration successful! You can now log in.");
       setEmail("");
-      setUsername("");  // Reset username
+      setUsername(""); 
       setPassword("");
       setConfirmPassword("");
       setError("");
@@ -47,7 +48,7 @@ const Register = ({ setPlayer1 }) => {
           type="text"
           placeholder="Username"
           value={username}
-          onChange={(e) => setUsername(e.target.value)}  // Handle username change
+          onChange={(e) => setUsername(e.target.value)} 
         />
       </div>
       

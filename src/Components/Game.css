@@ -5,19 +5,47 @@
   position: relative;
   overflow: hidden;
   /* background: url("../../public/Assets/bg-1.jpg"); */
-  background: rgb(231,231,237);
-  background: linear-gradient(0deg, rgba(231,231,237,1) 18%, rgba(19,202,240,1) 100%);
+  background: rgb(231, 231, 237);
+  background: linear-gradient(0deg, rgba(231, 231, 237, 1) 18%, rgba(19, 202, 240, 1) 100%);
 }
 
+.game-container .name-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 70vh;
+}
+.game-container .name-entry h2{
+  margin: 20px 0px;
+}
+.game-container input{
+  padding: 10px 30px;
+  font-size: 20px;
+}
+.game-container .name-entry button{
+  margin: 20px 0px;
+  background-color: rgb(14, 168, 14);
+  font-size: 20px;
+  border: none;
+  padding: 15px 50px;
+  border-radius: 30px;
+  transition: 600ms;
+}
+.game-container .name-entry button:hover{
+  background-color: yellow;
+}
 .game-info {
   text-align: center;
   font-size: 18px;
   font-weight: bold;
   margin-bottom: 10px;
 }
-.game-info p{
+
+.game-info p {
   font-size: 25px;
 }
+
 .game-area {
   width: 100%;
   height: 800px;
@@ -44,7 +72,8 @@
   border: none;
   cursor: pointer;
 }
-.ground{
+
+.ground {
   position: absolute;
   bottom: 100px;
   width: 100%;
@@ -89,4 +118,14 @@
   position: absolute;
   width: 60px;
   height: 60px;
+}
+
+.ground {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 10px;
+  background-color: #228b22;
+  /* Green color for the ground */
 }

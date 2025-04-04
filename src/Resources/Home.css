@@ -51,11 +51,12 @@
 
     }
 }
+
 .home-div {
     background-image: url("../../public/Assets/home_bg.jpg");
     background-repeat: no-repeat;
     background-size: contain;
-    height: 100vh;
+    height: 90vh;
 }
 
 .home-div h1 {
@@ -71,6 +72,25 @@
 .home-buttons button {
     border: 3px solid transparent !important;
 }
+.home-buttons{
+    list-style: none;
+}
+.logout-button button {
+
+}
+
+.logout-button button {
+    font-size: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    background-color: rgb(255, 204, 0);
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    width: 200px;
+    text-align: center;
+}
 
 .home-buttons button:hover {
     background-color: rgb(255, 254, 254) !important;
@@ -81,6 +101,7 @@
 .banana_home {
     animation: rotate-left infinite 10s linear;
 }
+
 .banana_home_1 {
     animation: rotate-right infinite 10s linear;
 }

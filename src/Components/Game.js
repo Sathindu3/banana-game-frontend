@@ -11,64 +11,89 @@ const Game = () => {
     y: 500,
     velocityY: 0,
     score: 0,
-    isJumping: false
+    isJumping: false,
+    name: "", 
   });
-  const [player2, setPlayer2] = useState({ x: 300, y: 500, velocityY: 0, score: 0, isJumping: false });
+  const [player2, setPlayer2] = useState({
+    x: 300,
+    y: 500,
+    velocityY: 0,
+    score: 0,
+    isJumping: false,
+    name: "", 
+  });
   const [chests, setChests] = useState([]);
   const [bananas, setBananas] = useState([]);
   const [quiz, setQuiz] = useState(null);
   const [showQuiz, setShowQuiz] = useState(false);
-  const [timer, setTimer] = useState(60);
-  const [answer, setAnswer] = useState("");  // To store the player's answer
-  const [feedback, setFeedback] = useState("");  // Feedback message: "Correct!" or "Try again!"
+  const [timer, setTimer] = useState(10); // Timer for the game
+  const [gameOver, setGameOver] = useState(false); // Track game over status
+  const [answer, setAnswer] = useState(""); // To store the player's answer
+  const [feedback, setFeedback] = useState(""); // Feedback message: "Correct!" or "Try again!"
   const gravity = 1;
 
+  const [gameStarted, setGameStarted] = useState(false); // To track if the game has started
+
+  // Platform data (adjust as needed)
   const platforms = [
-    { x: 100, y: 450, width: 550, height: 10 },
+    { x: 100, y: 450, width: 150, height: 10 },
     { x: 200, y: 350, width: 150, height: 10 },
     { x: 300, y: 250, width: 150, height: 10 },
     { x: 400, y: 150, width: 150, height: 10 },
-    { x: 100, y: 550, width: 550, height: 10 },
-
-    { x: 500, y: 450, width: 550, height: 10 },
+    { x: 500, y: 450, width: 150, height: 10 },
     { x: 800, y: 350, width: 150, height: 10 },
     { x: 600, y: 250, width: 150, height: 10 },
     { x: 750, y: 150, width: 150, height: 10 },
-    { x: 900, y: 550, width: 550, height: 10 },
-
-    { x: 200, y: 80, width: 550, height: 10 },
-    { x: 300, y: -20, width: 150, height: 10 },
-    { x: 500, y: -100, width: 150, height: 10 },
-    { x: 250, y: -150, width: 150, height: 10 },
-    { x: 400, y: -200, width: 550, height: 10 },
   ];
 
+  // Ground level
+  const groundLevel = 550;
+
   useEffect(() => {
-    placeChests();
-    placeBananas();
-  }, []);
+    if (gameStarted) {
+      placeChests();
+      placeBananas();
+      const interval = setInterval(() => {
+        setPlayer1((prev) => applyPhysics(prev, setPlayer1));
+        setPlayer2((prev) => applyPhysics(prev, setPlayer2));
+      }, 30);
+
+      // Countdown Timer Interval
+      const timerInterval = setInterval(() => {
+        setTimer((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(timerInterval); // Stop timer when it reaches 0
+            setGameOver(true); // Set the game as over when timer reaches 0
+            declareWinner(); 
+            return 0;
+          }
+          return prevTime - 1; 
+        });
+      }, 1000); 
+
+      return () => {
+        clearInterval(interval);
+        clearInterval(timerInterval); 
+      };
+    }
+  }, [gameStarted]);
 
   const placeChests = () => {
-    setChests([{ x: 200, y: 350 }, { x: 300, y: 250 }, { x: 400, y: 150 }]);
+    setChests([{ x: 800, y: 320 }, { x: 580, y: 400 }, { x: 400, y: 120 }]);
   };
 
   const placeBananas = () => {
     setBananas([{ x: 150, y: 400 }, { x: 250, y: 300 }, { x: 350, y: 200 }]);
   };
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPlayer1((prev) => applyPhysics(prev));
-      setPlayer2((prev) => applyPhysics(prev));
-    }, 30);
-    return () => clearInterval(interval);
-  }, []);
-
-  const applyPhysics = (player) => {
+  const applyPhysics = (player, setPlayer) => {
+    if (gameOver) return player;
+  
     let newY = player.y + player.velocityY;
     let newVelocityY = player.velocityY + gravity;
     let isOnPlatform = false;
-
+  
+    // Check for platform collisions
     platforms.forEach((platform) => {
       if (
         newY + 40 >= platform.y &&
@@ -76,16 +101,25 @@ const Game = () => {
         player.x + 40 > platform.x &&
         player.x < platform.x + platform.width
       ) {
-        newY = platform.y - 40;
-        newVelocityY = 0;
+        newY = platform.y - 40; 
+        newVelocityY = 0; 
         isOnPlatform = true;
       }
     });
-
+  
+    // Check if the player is on the ground level
+    if (newY + 40 > groundLevel) {
+      newY = groundLevel - 40; 
+      newVelocityY = 0; 
+      isOnPlatform = true;
+    }
+  
     return { ...player, y: newY, velocityY: newVelocityY, isJumping: !isOnPlatform };
   };
 
   const handleKeyPress = (event) => {
+    if (gameOver) return; // Prevent actions if the game is over
+  
     if (["a", "d", "w"].includes(event.key)) {
       setPlayer1((prev) => movePlayer(prev, event.key, setPlayer1));
       new Audio(jumpSound).play();
@@ -119,15 +153,16 @@ const Game = () => {
 
     checkChestCollision(newPlayer);
     return newPlayer;
-
   };
 
   const checkChestCollision = (player) => {
+    if (gameOver) return; // Prevent chest collection if the game is over
+  
     setChests((prevChests) =>
       prevChests.filter((chest) => {
         const isColliding = Math.abs(player.x - chest.x) < 30 && Math.abs(player.y - chest.y) < 30;
         if (isColliding) {
-          fetchQuiz();
+          fetchQuiz(); // Fetch quiz when chest is collected
         }
         return !isColliding;
       })
@@ -137,9 +172,10 @@ const Game = () => {
   const fetchQuiz = async () => {
     try {
       const response = await axios.get("http://localhost:5062/api/Game/quiz");
-      setQuiz(response.data.data);
-      setShowQuiz(true);
-      setFeedback("");  // Reset feedback when a new quiz is fetched
+      if (response.data.data) {
+        setQuiz(response.data.data);
+        setShowQuiz(true); // Show quiz when it is fetched
+      }
     } catch (error) {
       console.error("Error fetching quiz", error);
     }
@@ -152,12 +188,41 @@ const Game = () => {
   const verifyAnswer = () => {
     if (answer === quiz.solution.toString()) {
       setFeedback("Correct!");
-      setPlayer1((prev) => ({ ...prev, score: prev.score + 10 })); // Add score if correct
+      setPlayer1((prev) => ({ ...prev, score: prev.score + 50 })); 
       setShowQuiz(false); // Hide quiz after answering correctly
     } else {
       setFeedback("Try again!");
-      setAnswer(""); // Reset the input for a retry
+      setAnswer(""); 
     }
+  };
+
+  const startGame = () => {
+    setGameStarted(true);
+    setGameOver(false); // Reset game over status when starting a new game
+    setPlayer1({ ...player1, score: 0 });
+    setPlayer2({ ...player2, score: 0 });
+    setTimer(10);
+  };
+
+  const declareWinner = () => {
+    const winner =
+      player1.score > player2.score
+        ? `${player1.name} Wins!`
+        : player1.score < player2.score
+        ? `${player2.name} Wins!`
+        : "It's a Tie!";
+    alert(`Game Over! ${winner}. Click 'OK' to play again.`);
+    restartGame(); // Restart the game when the alert is dismissed
+  };
+
+  const restartGame = () => {
+    setGameStarted(false);
+    setGameOver(false); 
+    setPlayer1({ ...player1, score: 0, x: 100, y: 500 });
+    setPlayer2({ ...player2, score: 0, x: 300, y: 500 });
+    setTimer(10);
+    setChests([]);
+    setBananas([]);
   };
 
   useEffect(() => {
@@ -168,7 +233,6 @@ const Game = () => {
   }, []);
 
   // Music
-
   useEffect(() => {
     const bgMusic = new Audio(backgroundMusic);
     bgMusic.loop = true;
@@ -186,7 +250,6 @@ const Game = () => {
     };
   }, []);
 
-
   // collect banana
   useEffect(() => {
     const checkBananaCollection = (player, setPlayer) => {
@@ -194,7 +257,7 @@ const Game = () => {
         return prevBananas.map((banana) => {
           if (!banana.collected && Math.abs(player.x - banana.x) < 30 && Math.abs(player.y - banana.y) < 30) {
             new Audio(collectSound).play();
-            setPlayer((prev) => ({ ...prev, score: prev.score + 10 })); // Increase score
+            setPlayer((prev) => ({ ...prev, score: prev.score + 10 })); 
             return { ...banana, collected: true }; // Mark banana as collected
           }
           return banana;
@@ -206,41 +269,60 @@ const Game = () => {
     checkBananaCollection(player2, setPlayer2);
   }, [player1, player2, bananas]);
 
-
   return (
     <div className="game-container">
-      <div className="game-info">
-        <p>⏳ Time Left: {timer}s</p>
-        <p>🐵 Player 1 Score: {player1.score} | 🐵 Player 2 Score: {player2.score}</p>
-      </div>
-      <div className="game-area">
-        {platforms.map((platform, index) => (
-          <div key={index} className="platform" style={{ left: platform.x, top: platform.y }} />
-        ))}
-        <img src="/assets/monkey1.png" className="player" style={{ left: player1.x, top: player1.y }} alt="Player 1" />
-        <img src="/assets/monkey2.png" className="player" style={{ left: player2.x, top: player2.y }} alt="Player 2" />
-        {chests.map((chest, index) => (
-          <img key={index} src="/assets/chest.png" className="chest" style={{ left: chest.x, top: chest.y }} alt="Chest" />
-        ))}
-        {bananas
-          .filter((banana) => !banana.collected) // Only render uncollected bananas
-          .map((banana, index) => (
-            <img key={index} src="/assets/banana.png" className="banana" style={{ left: banana.x, top: banana.y }} alt="Banana" />
-          ))}
-      <div className="ground"></div>
-      </div>
-      {showQuiz && quiz && (
-        <div className="quiz-container">
-          <img src={quiz.question} alt="Quiz" />
+      {!gameStarted ? (
+        <div className="name-entry">
+          <h2>Enter Player 1 Name:</h2>
           <input
-            type="number"
-            value={answer}
-            onChange={handleAnswerChange}
-            placeholder="Enter your answer"
+            type="text"
+            value={player1.name}
+            onChange={(e) => setPlayer1((prev) => ({ ...prev, name: e.target.value }))} 
           />
-          <button onClick={verifyAnswer}>Submit</button>
-          <p>{feedback}</p>
+          <h2>Enter Player 2 Name:</h2>
+          <input
+            type="text"
+            value={player2.name}
+            onChange={(e) => setPlayer2((prev) => ({ ...prev, name: e.target.value }))} 
+          />
+          <button onClick={startGame}>Start Game</button>
         </div>
+      ) : (
+        <>
+          <div className="game-info">
+            <p>⏳ Time Left: {timer}s</p>
+            <p>🐵 {player1.name} Score: {player1.score} | 🐵 {player2.name} Score: {player2.score}</p>
+          </div>
+          <div className="game-area">
+            {platforms.map((platform, index) => (
+              <div key={index} className="platform" style={{ left: platform.x, top: platform.y }} />
+            ))}
+            <img src="/assets/monkey1.png" className="player" style={{ left: player1.x, top: player1.y }} alt="Player 1" />
+            <img src="/assets/monkey2.png" className="player" style={{ left: player2.x, top: player2.y }} alt="Player 2" />
+            {chests.map((chest, index) => (
+              <img key={index} src="/assets/chest.png" className="chest" style={{ left: chest.x, top: chest.y }} alt="Chest" />
+            ))}
+            {bananas
+              .filter((banana) => !banana.collected) 
+              .map((banana, index) => (
+                <img key={index} src="/assets/banana.png" className="banana" style={{ left: banana.x, top: banana.y }} alt="Banana" />
+              ))}
+            <div className="ground" style={{ top: groundLevel }} />
+          </div>
+          {showQuiz && quiz && (
+            <div className="quiz-container">
+              <img src={quiz.question} alt="Quiz" />
+              <input
+                type="number"
+                value={answer}
+                onChange={handleAnswerChange}
+                placeholder="Enter your answer"
+              />
+              <button onClick={verifyAnswer}>Submit</button>
+              <p>{feedback}</p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
